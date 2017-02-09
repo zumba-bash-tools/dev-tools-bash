@@ -11,3 +11,12 @@ Useful for other software engineers that work **in the tech departnment at the c
 ```
 . ~/zumba/git/dev-tools-bash/dev-tools.sh
 ```
+
+3. Source your profile file:
+```
+. source ~/.bash_profile
+```
+or
+```
+. source ~/.profile
+```
