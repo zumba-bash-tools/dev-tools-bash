@@ -106,3 +106,20 @@ dev-clear() {
 	dev clear-caches &> /dev/null &&
 	echo "All caches cleared successfully..."
 }
+
+# usage: dev-restart
+#
+# For when things are just getting a little too funky in your VM.
+# This is the last step before calling Ghost Busters.
+dev-restart() {
+	echo "Halting the VM..."
+	# Actually halt the VM.  Don't do dev stop - that only suspends the VM and you may end up with same problems once
+	# it starts back up
+	cd ~/zumba/git/onboarding &&
+	vagrant halt &&
+	cd - &&
+	echo "Starting things back up..." &&
+	# Use `vagrant halt` then `dev start` that way all the initialization stuff that happens in `dev start` runs (unlike
+	# doing just a `vagrant reload`)
+	dev start
+}
