@@ -5,11 +5,6 @@
 #
 ###
 
-# usage: dev-create <APP-NAME>
-dev-create() {
-	dev create-container --container "$1-development"
-}
-
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
 dev-build() {
 	if [ $2 ]; then
