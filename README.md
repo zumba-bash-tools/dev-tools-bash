@@ -7,15 +7,8 @@ Useful for other software engineers that work **in the tech departnment at the c
 
 1. First check out this repo into your normal folder for git repos.
 2. Add the following line to your `.profile` or `.bash_profile` file in your home folder:
+    ```
+    . ~/zumba/git/dev-tools-bash/dev-tools.sh
+    ```
 
-```
-. ~/zumba/git/dev-tools-bash/dev-tools.sh
-```
-3. Source your profile file:
-```
-. source ~/.bash_profile
-```
-or
-```
-. source ~/.profile
-```
+3. Open a new console and try out one of the new `dev-` commands.
