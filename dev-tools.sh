@@ -39,6 +39,10 @@ dev-log() {
 	fi
 	if [ $1 == "service" ]; then
 		log="--log /tmp/zs_debug";
+	elif [ $1 == "rulesengineservice" ]; then
+		log="--log /tmp/rulesengine.log";
+	elif [ $1 == "userservice" ]; then
+		log="--log /tmp/user.log";
 	fi
 	dev show-log --container "$1-development" $log $lines;
 }
