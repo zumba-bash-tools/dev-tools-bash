@@ -7,7 +7,7 @@
 
 # usage: dev-create <APP-NAME>
 dev-create() {
-	dev create-container --container "$1-development"
+	dev create-container --container "$1-development" --build-app --grains xdebug
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
