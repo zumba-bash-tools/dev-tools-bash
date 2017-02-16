@@ -33,11 +33,14 @@ dev-ssh() {
 
 # usage: dev-log <APP-NAME> <OPTIONAL: LINES>
 dev-log() {
+	local lines log;
 	if [ $2 ]; then
-		dev show-log --container "$1-development" --lines $2;
-	else
-		dev show-log --container "$1-development";
+		lines="--lines $2"
 	fi
+	if [ $1 == "service" ]; then
+		log="--log /tmp/zs_debug";
+	fi
+	dev show-log --container "$1-development" $log $lines;
 }
 
 # usage: dev-test <APP-NAME>
