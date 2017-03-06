@@ -130,3 +130,56 @@ dev-restart() {
 	# doing just a `vagrant reload`)
 	dev start
 }
+
+# Usage: dev-xdebug-init
+#
+# This sets up the Visual Studio Code configurations for each repo folder, and sets up a different port to use for each
+# to make debugging multiple apps at same time possible
+#
+# This is safe to also run after a dev update, if the ports on the xdebug.ini get reset
+dev-xdebug-init() {
+	local vsconfig=$(cat ~/zumba/git/dev-tools-bash/vscode-config.json)
+	local apps=(admin api public rulesengineservice service userservice zumba)
+	local port=9000
+	local appconfig appfolder cmd
+	for app in ${apps[@]}; do
+		appfolder="$HOME/zumba/git/$app/"
+		if [[ -d $appfolder ]]; then
+			echo "Updating things for $app using port $port"
+			echo "Updating vscode configuration..."
+			[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
+			echo "$(printf "$vsconfig" $port $app)" > "${appfolder}.vscode/launch.json"
+
+			echo "Updating xdebug.ini in container..."
+			cmd="sed -i 's/9000/${port}/' /etc/php/5.6/mods-available/xdebug.ini"
+			dev container-ssh --container "${app}-development" --command "$cmd"
+		else
+			echo "no $appfolder, so not initializing $app"
+		fi
+		((port++))
+	done
+
+	echo "restarting things so the new ports take effect..."
+	dev-restart
+
+	echo
+	echo ----------------------------------------------------------------------------------------------
+	echo "            INSTRUCTIONS"
+	echo
+	echo If you have trouble with the .vscode/launch.json files showing up as changes in git:
+	echo
+	echo Run this line:
+	echo
+	echo "echo \".vscode/\" >> ~/.gitignore_global"
+	echo
+	echo Then, if you have never done this in the past, you may also need to run this command:
+	echo
+	echo "git config --global core.excludesfile ~/.gitignore_global"
+	echo
+	echo Note: You should only need to do the above ONCE, after that point the vscode config file will no longer show
+	echo as a changed file in git in any repos.
+	echo
+	echo
+	echo ----------------------------------------------------------------------------------------------
+	echo
+}

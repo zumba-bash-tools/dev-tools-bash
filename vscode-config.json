@@ -1,0 +1,13 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Listen for XDebug",
+			"type": "php",
+			"request": "launch",
+			"port": %s,
+			"localSourceRoot": "${workspaceRoot}",
+			"serverSourceRoot": "/var/www/%s/releases/local_source"
+		}
+	]
+}
