@@ -151,7 +151,7 @@ dev-xdebug-init() {
 			echo "$(printf "$vsconfig" $port $app)" > "${appfolder}.vscode/launch.json"
 
 			echo "Updating xdebug.ini in container..."
-			cmd="sed -i 's/9000/${port}/' /etc/php/5.6/mods-available/xdebug.ini"
+			cmd="sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/' /etc/php/5.6/mods-available/xdebug.ini"
 			dev container-ssh --container "${app}-development" --command "$cmd"
 		else
 			echo "no $appfolder, so not initializing $app"
