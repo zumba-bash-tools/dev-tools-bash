@@ -15,7 +15,7 @@ Useful for other software engineers that work **in the tech departnment at the c
 
 # Commands
 
-Note that any of these tools that require the `<CONTAINER>`, you only have to specify the first part, you can **leave off `-development`.  The tools always assume you are working in development.  They also make a few other assumptions, so if a command errors, it could be because you are missing one of the containers or apps or something like that.
+Note that any of these tools that require the `<CONTAINER>`, you only have to specify the first part, you can **leave off `-development`**.  The tools always assume you are working in development.  They also make a few other assumptions, so if a command errors, it could be because you are missing one of the containers or apps or something like that.
 
 ## dev-create
 
