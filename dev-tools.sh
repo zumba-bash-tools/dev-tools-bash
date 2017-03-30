@@ -62,6 +62,13 @@ dev-test() {
 	dev ssh --command "lxc exec $1-development -- su - $1 -c \"rm /home/$1/.bash_profile\""
 }
 
+# usage: dev-update-db
+dev-update-db() {
+	echo "Updating local database schema..." &&
+	dev update-database --user guest --password guest &> /dev/null &&
+	echo "Done."
+}
+
 # usage: dev-phpunit <APP-NAME> <OPTIONAL: PHPUNIT ARGUMENT(S)>
 dev-phpunit() {
         local service="${1}"
