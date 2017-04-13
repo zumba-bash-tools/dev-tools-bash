@@ -83,14 +83,6 @@ dev-phpunit service Zumba/Test/Model/UserTest.php
 ```
 **Difference from `dev-test`:** this runs a single phpunit command without having to go into the container
 
-## dev-clear
-**usage:**
-```bash
-dev-clear
-```
-
-This one is on chopping block, it is about to be built in to the `dev clear-caches` command.
-
 ## dev-restart
 
 **usage:**
