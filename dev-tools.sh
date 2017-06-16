@@ -101,7 +101,7 @@ dev-restart() {
 	echo "Halting the VM..."
 	# Actually halt the VM.  Don't do dev stop - that only suspends the VM and you may end up with same problems once
 	# it starts back up
-	cd ~/zumba/git/onboarding &&
+	cd $ZUMBA_APPS_REPO_PATH/onboarding &&
 	vagrant halt &&
 	cd - &&
 	echo "Starting things back up..." &&
@@ -112,12 +112,12 @@ dev-restart() {
 
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
-	local vsconfig=$(cat ~/zumba/git/dev-tools-bash/vscode-config.json)
+	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
 	local apps=(admin api public rulesengineservice service userservice zumba)
 	local port=9000
 	local appconfig appfolder cmd
 	for app in ${apps[@]}; do
-		appfolder="$HOME/zumba/git/$app/"
+		appfolder="$ZUMBA_APPS_REPO_PATH/$app/"
 		if [[ -d $appfolder ]]; then
 			echo "Updating things for $app using port $port"
 			echo "Updating vscode configuration..."
