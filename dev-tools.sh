@@ -74,28 +74,6 @@ dev-phpunit() {
         dev container-ssh --container "$service-development" --command "cd /var/www/$service/current && $path $*"
 }
 
-# usage: dev-clear
-dev-clear() {
-	echo "Clearing APC cache in service..." &&
-	dev container-ssh --container "service-development" --command "{
-			curl -Lksv https://localhost/apc_clear_cache.php;
-			exit;
-	}" &> /dev/null &&
-	echo "Restarting apache in public..." &&
-	dev container-ssh --container "public-development" --command "{
-			service apache2 restart;
-			exit;
-	}" &> /dev/null &&
-	echo "Clearing file cache for admin..." &&
-	dev container-ssh --container admin-development --command "
-		cd /var/www/admin/current &&
-		rm -Rf app/tmp/* &&
-		git checkout -- app/tmp/" &> /dev/null &&
-	echo "Running clear-caches..." &&
-	dev clear-caches &> /dev/null &&
-	echo "All caches cleared successfully..."
-}
-
 # usage: dev-restart
 dev-restart() {
 	echo "Halting the VM..."
