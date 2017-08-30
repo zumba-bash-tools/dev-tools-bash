@@ -7,71 +7,114 @@
 #
 ###
 
+# For use in functions only to get the container based on the passed in app
+_devtools-container() {
+	if [[ $1 == "netsuite" ]]; then
+		echo job-development
+		return 0
+	fi
+	echo "$1-development"
+}
+
+# Print the line properly including quotes around arguments with spaces
+_devtools-println() {
+	local whitespace="[[:space:]]"
+	local cmd=()
+	for i in "$@"; do
+    	if [[ $i =~ $whitespace ]]; then
+			i=\'$i\'
+		fi
+		cmd+=("$i")
+	done
+	echo $ ${cmd[*]}
+}
+
+# Echo then execute a command
+_devtools-execute() {
+	_devtools-println "$@"
+	"$@"
+}
+
 # usage: dev-create <APP-NAME>
 dev-create() {
-	dev create-container --container "$1-development" --build-app --grains xdebug
+	local container=`_devtools-container $1`
+	_devtools-execute dev create-container --container $container --build-app --grains xdebug
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
 dev-build() {
-	if [ $2 ]; then
-		dev build-app --container "$1-development" --app $2;
-	else
-		dev build-app --container "$1-development" --app $1;
+	local container=`_devtools-container $1`
+	local app=$1
+	if [[ $2 ]]; then
+		app=$2
 	fi
+	_devtools-execute dev build-app --container $container --app $app
 }
 
-# usage: dev-ssh <OPTIONAL: APP-NAME> <OPTIONAL: USER>
+# usage: dev-ssh <OPTIONAL: APP-NAME> <OPTIONAL: USER or 1 to use APP-NAME for user>
 dev-ssh() {
-	if [ $2 ]; then
-		dev container-ssh --container "$1-development" --user "$2";
-	elif [ $1 ]; then
-		dev container-ssh --container "$1-development";
+	local container user
+	if [[ $1 ]]; then
+		container="--container `_devtools-container $1`"
+	fi
+	if [[ $2 ]]; then
+		if [[ $2 == "1" ]]; then
+			user="--user $1"
+		else
+			user="--user $2"
+		fi
+	fi
+
+	if [[ $container ]]; then
+		_devtools-execute dev container-ssh $container $user
 	else
-		dev ssh;
+		_devtools-execute dev ssh
 	fi
 }
 
 # usage: dev-log <APP-NAME> <OPTIONAL: LINES>
 dev-log() {
 	local lines log;
-	if [ $2 ]; then
+	local container=`_devtools-container $1`
+	if [[ $2 ]]; then
 		lines="--lines $2"
 	fi
-	if [ $1 == "service" ]; then
-		log="--log /tmp/zs_debug";
-	elif [ $1 == "rulesengineservice" ]; then
-		log="--log /tmp/rulesengine.log";
-	elif [ $1 == "userservice" ]; then
-		log="--log /tmp/user.log";
+	if [[ $1 == "service" ]]; then
+		log="--log /tmp/zs_debug"
+	elif [[ $1 == "rulesengineservice" ]]; then
+		log="--log /tmp/rulesengine.log"
+	elif [[ $1 == "userservice" ]]; then
+		log="--log /tmp/user.log"
 	fi
-	dev show-log --container "$1-development" $log $lines;
+	_devtools-execute dev show-log --container $container $log $lines
 }
 
 # usage: dev-test <APP-NAME>
 dev-test() {
 	local phpunit commands
+	local container=`_devtools-container $1`
 	phpunit="./vendor/phpunit/phpunit/phpunit"
 	# Add any special cases here for location of phpunit executable...
-	if [ $1 == "service" ]; then
+	if [[ $1 == "service" ]]; then
 		phpunit="./lib/phpunit/phpunit/phpunit"
 	fi
 	commands="cd /var/www/$1/current; alias phpunit=\\\"${phpunit}\\\";"
-	dev ssh --command "lxc exec $1-development -- su - $1 -c \"echo '$commands . ~/.profile;' >> /home/$1/.bash_profile\""
-	dev-ssh $1 $1
-	dev ssh --command "lxc exec $1-development -- su - $1 -c \"rm /home/$1/.bash_profile\""
+	_devtools-execute dev ssh --command "lxc exec $container -- su - $1 -c \"echo '$commands . ~/.profile;' >> /home/$1/.bash_profile\""
+	_devtools-execute dev-ssh $1 $1
+	_devtools-execute dev ssh --command "lxc exec $container -- su - $1 -c \"rm /home/$1/.bash_profile\""
 }
 
 # usage: dev-phpunit <APP-NAME> <OPTIONAL: PHPUNIT ARGUMENT(S)>
 dev-phpunit() {
         local service="${1}"
+        local container=`_devtools-container $service`
         shift
         if [[ $service == "service" ]]; then
                 local path="./lib/bin/phpunit"
         else
                 local path="./vendor/bin/phpunit"
         fi
-        dev container-ssh --container "$service-development" --command "cd /var/www/$service/current && $path $*"
+        _devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $path $*"
 }
 
 # usage: dev-clear
@@ -92,7 +135,7 @@ dev-clear() {
 		rm -Rf app/tmp/* &&
 		git checkout -- app/tmp/" &> /dev/null &&
 	echo "Running clear-caches..." &&
-	dev clear-caches &> /dev/null &&
+	_devtools-execute dev clear-caches &> /dev/null &&
 	echo "All caches cleared successfully..."
 }
 
@@ -107,15 +150,15 @@ dev-restart() {
 	echo "Starting things back up..." &&
 	# Use `vagrant halt` then `dev start` that way all the initialization stuff that happens in `dev start` runs (unlike
 	# doing just a `vagrant reload`)
-	dev start
+	_devtools-execute dev start
 }
 
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
 	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
-	local apps=(admin api public rulesengineservice service userservice zumba)
+	local apps=(admin api public rulesengineservice service userservice zumba netsuite)
 	local port=9000
-	local appconfig appfolder cmd
+	local appconfig appfolder cmd container
 	for app in ${apps[@]}; do
 		appfolder="$ZUMBA_APPS_REPO_PATH/$app/"
 		if [[ -d $appfolder ]]; then
@@ -124,9 +167,10 @@ dev-xdebug-init() {
 			[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
 			echo "$(printf "$vsconfig" $port $app)" > "${appfolder}.vscode/launch.json"
 
-			echo "Updating xdebug.ini in container..."
+			container=`_devtools-container $app`
+			echo "Updating xdebug.ini in ${container}..."
 			cmd="sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/' /etc/php/5.6/mods-available/xdebug.ini"
-			dev container-ssh --container "${app}-development" --command "$cmd"
+			dev container-ssh --container $container --command "$cmd"
 		else
 			echo "no $appfolder, so not initializing $app"
 		fi
