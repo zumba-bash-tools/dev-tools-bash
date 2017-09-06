@@ -42,8 +42,21 @@ dev-build <CONTAINER> <APP-NAME>
 
 **usage:**
 ```bash
- dev-ssh <OPTIONAL: APP-NAME> <OPTIONAL: USER>
+ dev-ssh <OPTIONAL: APP-NAME> <OPTIONAL: USER OR 1>
 ```
+
+If you pass in 1 as second argument, it will use the first argument as both the app name and the user.
+
+**example:** SSH to netsuite (automatically uses job box) with root user:
+```bash
+dev-ssh netsuite
+```
+
+**example:** SSH to service with service user:
+```bash
+dev-ssh service 1
+```
+
 Note: no arguments will ssh into the guest box.
 
 ## dev-log
