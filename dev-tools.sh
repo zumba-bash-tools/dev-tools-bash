@@ -21,7 +21,7 @@ _devtools-println() {
 	local whitespace="[[:space:]]"
 	local cmd=()
 	for i in "$@"; do
-    	if [[ $i =~ $whitespace ]]; then
+		if [[ $i =~ $whitespace ]]; then
 			i=\'$i\'
 		fi
 		cmd+=("$i")
@@ -106,15 +106,15 @@ dev-test() {
 
 # usage: dev-phpunit <APP-NAME> <OPTIONAL: PHPUNIT ARGUMENT(S)>
 dev-phpunit() {
-        local service="${1}"
-        local container=`_devtools-container $service`
-        shift
-        if [[ $service == "service" ]]; then
-                local path="./lib/bin/phpunit"
-        else
-                local path="./vendor/bin/phpunit"
-        fi
-        _devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $path $*"
+	local service="${1}"
+	local container=`_devtools-container $service`
+	shift
+	if [[ $service == "service" ]]; then
+		local path="./lib/bin/phpunit"
+	else
+		local path="./vendor/bin/phpunit"
+	fi
+	_devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $path $*"
 }
 
 # usage: dev-clear
