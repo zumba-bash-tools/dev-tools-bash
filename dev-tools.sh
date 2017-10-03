@@ -169,7 +169,7 @@ dev-xdebug-init() {
 
 			container=`_devtools-container $app`
 			echo "Updating xdebug.ini in ${container}..."
-			cmd="sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/' /etc/php/5.6/mods-available/xdebug.ini"
+			cmd="grep -r -l 'xdebug.remote_port' /etc/php/* | xargs sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/g'"
 			dev container-ssh --container $container --command "$cmd"
 		else
 			echo "no $appfolder, so not initializing $app"
