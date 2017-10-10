@@ -38,7 +38,7 @@ _devtools-execute() {
 # usage: dev-create <APP-NAME>
 dev-create() {
 	local container=`_devtools-container $1`
-	_devtools-execute dev create-container --container $container --build-app --grains xdebug
+	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
