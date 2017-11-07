@@ -68,7 +68,7 @@ dev-init-primer() {
 	echo
 	echo You should not see errors after this point...
 	echo
-	_devtools-execute dev container-ssh --container job-development --command "ln -s /var/www/primer/releases/local_source /var/www/primer/current"
+	_devtools-execute dev container-ssh --container job-development --command "[ ! -L \"/var/www/primer/current\" ] && ln -s /var/www/primer/releases/local_source /var/www/primer/current"
 	dev-build primer
 }
 
