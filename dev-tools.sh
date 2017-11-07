@@ -222,3 +222,21 @@ dev-xdebug-init() {
 	echo ----------------------------------------------------------------------------------------------
 	echo
 }
+
+# Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool
+_devtools-extra() {
+	local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+	local filename permission
+	# Load the conditional tools...
+	for filename in ${DIR}/extra_tools/*.sh
+	do
+		permission=${filename##*/}
+		permission=${permission%.sh}
+		permission=DEVTOOLS_$permission
+		eval permission=\$$permission
+		if [[ $permission == "1" ]]; then
+			. $filename
+		fi
+	done
+}
+_devtools-extra
