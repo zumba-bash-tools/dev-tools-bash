@@ -8,6 +8,10 @@ Useful for other software engineers that work **in the tech departnment at the c
 1. First check out this repo into your normal folder for git repos.
 2. Add the following line to your `.profile` or `.bash_profile` file in your home folder:
     ```
+    # Enable / Disable Specialty Tools
+    export DEVTOOLS_phpunit=0
+
+    # Include the dev-tools
     . ~/zumba/git/dev-tools-bash/dev-tools.sh
     ```
 
@@ -140,6 +144,25 @@ This initializes the **primer** app inside the **job-development** container.  U
 Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create primer` first.
 
 If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
+
+# Conditional Commands
+
+These are commands that are available but are not "turned on" by default because they don't follow the typical usage for other tools.  Or it may break things depending on how you do things on your local.
+
+## phpunit
+
+To enable, in your **.bash_profile** file, set `DEVTOOLS_phpunit` to `1`.  Or if you are missing the line, add this above the line that includes dev-tools.sh file:
+```bash
+export DEVTOOLS_phpunit=1
+```
+
+**To use:**
+This adds a handy alias for `phpunit`.  From the host machine, just `cd` into any repo path that goes to a built app, then use `phpunit ...` directly in the folder.
+
+This is basically a shortcut for calling `dev-phpunit app-name ...`, as long as you are in the app's main folder, no need to specify the app name.
+
+**Warning:**
+If you have phpunit already installed in the main path for your host machine, this may interfere with that.
 
 # Special Apps
 
