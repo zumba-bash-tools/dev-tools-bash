@@ -127,3 +127,23 @@ This sets up the Visual Studio Code configurations for each repo folder, and set
 This is safe to also run **after a `dev update`**, if the ports on the xdebug.ini get reset.  In fact that is the main purpose this was created.
 
 Note that after the script runs, it will give some instructions to make sure the VSC config files don't end up showing as changes in git.
+
+## dev-init-primer
+
+**usage:**
+```bash
+dev-init-primer
+```
+
+This initializes the **primer** app inside the **job-development** container.  Use this so you can run PHPUnit tests for primer inside the **job-development** container.
+
+Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create primer` first.
+
+If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
+
+# Special Apps
+
+The dev-* tools are all built to automatically know which container to use for the following special case apps:
+
+* **netsuite** - automatically uses **job-development** container
+* **primer** - automatically uses **job-development** container
