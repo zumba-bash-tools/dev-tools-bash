@@ -6,8 +6,9 @@
 			"type": "php",
 			"request": "launch",
 			"port": %s,
-			"localSourceRoot": "${workspaceRoot}",
-			"serverSourceRoot": "/var/www/%s/releases/local_source"
+			"pathMappings": {
+				"/var/www/%s/releases/local_source": "${workspaceRoot}"
+			}
 		}
 	]
 }
