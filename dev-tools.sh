@@ -232,7 +232,7 @@ dev-env() {
 	if [[ $config != '' ]]; then
 		local cmd="grep -i $config"
 	else
-		local cmd="less"
+		local cmd="cat"
 	fi
 
 	if [[ $service == service ]]; then

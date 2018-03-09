@@ -136,7 +136,7 @@ Note that after the script runs, it will give some instructions to make sure the
 
 **usage:**
 ```bash
-dev-init-primer 
+dev-init-primer
 ```
 
 This initializes the **primer** app inside the **job-development** container.  Use this so you can run PHPUnit tests for primer inside the **job-development** container.
