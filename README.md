@@ -145,6 +145,26 @@ Make sure the **job-development** container is already created before calling th
 
 If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
 
+## dev-env
+
+**usage:**
+```bash
+dev-env <APP-NAME> <OPTIONAL: Param Search>
+```
+
+This allows you to easily view the shared environment config without needing to ssh and other stuff. 
+
+#### Examples
+**Get the full shared for userservice:**
+```bash
+dev-env userservice
+```
+
+**Get the mongo settings for userservice:**
+```bash
+dev-env userservice mongo
+```
+
 # Conditional Commands
 
 These are commands that are available but are not "turned on" by default because they don't follow the typical usage for other tools.  Or it may break things depending on how you do things on your local.
