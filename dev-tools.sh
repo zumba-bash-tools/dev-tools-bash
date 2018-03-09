@@ -223,6 +223,29 @@ dev-xdebug-init() {
 	echo
 }
 
+#gets the shared env
+dev-env() {
+	local service="${1}"
+	local config="${2}"
+	local container=`_devtools-container $service`
+
+	if [[ $config != '' ]]; then
+		local cmd="grep -i $config"
+	else
+		local cmd="less"
+	fi
+
+	if [[ $service == service ]]; then
+		local path=/var/www/service/shared/config/environment.php
+	elif [[ $service == public ]]; then
+		local path=/var/www/public/shared/app/Config/environment.php
+	else
+		local path=/var/www/$service/shared/.env
+	fi
+
+	_devtools-execute dev container-ssh --container $container --command "$cmd $path"
+}
+
 # Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool
 _devtools-extra() {
 	local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

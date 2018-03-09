@@ -136,7 +136,7 @@ Note that after the script runs, it will give some instructions to make sure the
 
 **usage:**
 ```bash
-dev-init-primer
+dev-init-primer 
 ```
 
 This initializes the **primer** app inside the **job-development** container.  Use this so you can run PHPUnit tests for primer inside the **job-development** container.
@@ -144,6 +144,26 @@ This initializes the **primer** app inside the **job-development** container.  U
 Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create primer` first.
 
 If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
+
+## dev-env
+
+**usage:**
+```bash
+dev-env <APP-NAME> <OPTIONAL: Param Search>
+```
+
+This allows you to easily view the shared environment config without needing to ssh and other stuff. 
+
+#### Examples
+**Get the full shared for userservice:**
+```bash
+dev-env userservice
+```
+
+**Get the mongo settings for userservice:**
+```bash
+dev-env userservice mongo
+```
 
 # Conditional Commands
 
