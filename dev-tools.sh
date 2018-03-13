@@ -237,8 +237,8 @@ dev-env() {
 
 	if [[ $service == service ]]; then
 		local path=/var/www/service/shared/config/environment.php
-	elif [[ $service == public ]]; then
-		local path=/var/www/public/shared/app/Config/environment.php
+	elif [[ $service == public || $service == api ]]; then
+		local path=/var/www/$service/shared/app/Config/environment.php
 	else
 		local path=/var/www/$service/shared/.env
 	fi
