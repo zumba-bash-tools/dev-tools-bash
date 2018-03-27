@@ -177,25 +177,43 @@ dev-restart() {
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
 	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
-	local apps=(admin api public rulesengineservice service userservice zumba netsuite)
-	local port=9000
-	local appconfig appfolder cmd container
+	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer)
+	local nextport=9000
+	local containers=()
+	local ports=()
+	local appconfig appfolder cmd container port
+
 	for app in ${apps[@]}; do
+		container=`_devtools-container $app`
+
+		# make sure to use same port for specific container
+		port=0
+		for i in ${!containers[@]}; do
+			if [[ ${containers[$i]} == $container ]]; then
+				port=${ports[$i]}
+			fi
+		done
+		if [[ $port == "0" ]]; then
+			# port for container not set yet so use next port
+			port=$nextport
+			ports+=($port)
+			containers+=($container)
+			((nextport++))
+		fi
+
 		appfolder="$ZUMBA_APPS_REPO_PATH/$app/"
 		if [[ -d $appfolder ]]; then
-			echo "Updating things for $app using port $port"
+			echo "Updating things for $container : $app using port $port"
 			echo "Updating vscode configuration..."
 			[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
 			echo "$(printf "$vsconfig" $port $app)" > "${appfolder}.vscode/launch.json"
 
-			container=`_devtools-container $app`
 			echo "Updating xdebug.ini in ${container}..."
 			cmd="grep -r -l 'xdebug.remote_port' /etc/php/* | xargs sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/g'"
 			dev container-ssh --container $container --command "$cmd"
 		else
 			echo "no $appfolder, so not initializing $app"
 		fi
-		((port++))
 	done
 
 	echo "restarting things so the new ports take effect..."
