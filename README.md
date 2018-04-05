@@ -78,6 +78,7 @@ dev-log [app-name] [line-count]
 ```
 
 `[app-name]` optional: if ommitted, will use current directory for the app.
+
 `[line-count]` optional: if ommited, will start with default of 10, note that the app name is not needed to specify number of lines.
 
 This does a little more than just a simple `dev show-logs --container ...`, it also specifies the log file to use depending on the specific container / app.  For instance, if you use `dev-log service` it will use `/tmp/zs_debug`.
@@ -165,6 +166,7 @@ dev-env [app-name] [param search]
 ```
 
 `[app-name]` optional: if ommitted, will use current directory for the app. Required if wishing to also include search params.
+
 `[param search]`  optional: allows only showing lines that match (case insensitive)
 
 This allows you to easily view the shared environment config without needing to ssh and other stuff.
