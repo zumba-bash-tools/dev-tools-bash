@@ -16,6 +16,15 @@ _devtools-container() {
 	echo "$1-development"
 }
 
+# Get the app, either the first parameter or the current folder as the app
+_devtools-app() {
+	if [[ $1 ]]; then
+		echo $1
+		return 0
+	fi
+	echo ${PWD##*/}
+}
+
 # Print the line properly including quotes around arguments with spaces
 _devtools-println() {
 	local whitespace="[[:space:]]"
@@ -37,14 +46,15 @@ _devtools-execute() {
 
 # usage: dev-create <APP-NAME>
 dev-create() {
-	local container=`_devtools-container $1`
+	local app=`_devtools-app $@`
+	local container=`_devtools-container $app`
 	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
 dev-build() {
-	local container=`_devtools-container $1`
-	local app=$1
+	local app=`_devtools-app $@`
+	local container=`_devtools-container $app`
 	if [[ $2 ]]; then
 		app=$2
 	fi
@@ -95,16 +105,22 @@ dev-ssh() {
 
 # usage: dev-log <APP-NAME> <OPTIONAL: LINES>
 dev-log() {
-	local lines log;
-	local container=`_devtools-container $1`
+	local lines log
+	local app=`_devtools-app $@`
+	local numeric = '^[0-9]+$'
+	if [[ $app =~ $numeric ]]; then
+		lines=app
+		app=`_devtools-app`
+	fi
+	local container=`_devtools-container $app`
 	if [[ $2 ]]; then
 		lines="--lines $2"
 	fi
-	if [[ $1 == "service" ]]; then
+	if [[ $app == "service" ]]; then
 		log="--log /tmp/zs_debug"
-	elif [[ $1 == "rulesengineservice" ]]; then
+	elif [[ $app == "rulesengineservice" ]]; then
 		log="--log /tmp/rulesengine.log"
-	elif [[ $1 == "userservice" ]]; then
+	elif [[ $app == "userservice" ]]; then
 		log="--log /tmp/user.log"
 	fi
 	_devtools-execute dev show-log --container $container $log $lines
@@ -113,16 +129,17 @@ dev-log() {
 # usage: dev-test <APP-NAME>
 dev-test() {
 	local phpunit commands
-	local container=`_devtools-container $1`
+	local app=`_devtools-app $@`
+	local container=`_devtools-container $app`
 	phpunit="./vendor/phpunit/phpunit/phpunit"
 	# Add any special cases here for location of phpunit executable...
-	if [[ $1 == "service" ]]; then
+	if [[ $app == "service" ]]; then
 		phpunit="./lib/phpunit/phpunit/phpunit"
 	fi
-	commands="cd /var/www/$1/current; alias phpunit=\\\"${phpunit}\\\";"
-	_devtools-execute dev ssh --command "lxc exec $container -- su - $1 -c \"echo '$commands . ~/.profile;' >> /home/$1/.bash_profile\""
-	_devtools-execute dev-ssh $1 $1
-	_devtools-execute dev ssh --command "lxc exec $container -- su - $1 -c \"rm /home/$1/.bash_profile\""
+	commands="cd /var/www/$app/current; alias phpunit=\\\"${phpunit}\\\";"
+	_devtools-execute dev ssh --command "lxc exec $container -- su - $app -c \"echo '$commands . ~/.profile;' >> /home/$app/.bash_profile\""
+	_devtools-execute dev-ssh $app $app
+	_devtools-execute dev ssh --command "lxc exec $container -- su - $app -c \"rm /home/$app/.bash_profile\""
 }
 
 # usage: dev-phpunit <APP-NAME> <OPTIONAL: PHPUNIT ARGUMENT(S)>
@@ -243,22 +260,21 @@ dev-xdebug-init() {
 
 #gets the shared env
 dev-env() {
-	local service="${1}"
-	local config="${2}"
-	local container=`_devtools-container $service`
+	local app=`_devtools-app $@`
+	local container=`_devtools-container $app`
 
-	if [[ $config != '' ]]; then
-		local cmd="grep -i $config"
+	if [[ $2 ]]; then
+		local cmd="grep -i $2"
 	else
 		local cmd="cat"
 	fi
 
-	if [[ $service == service ]]; then
+	if [[ $app == service ]]; then
 		local path=/var/www/service/shared/config/environment.php
-	elif [[ $service == public || $service == api ]]; then
-		local path=/var/www/$service/shared/app/Config/environment.php
+	elif [[ $app == public || $app == api ]]; then
+		local path=/var/www/$app/shared/app/Config/environment.php
 	else
-		local path=/var/www/$service/shared/.env
+		local path=/var/www/$app/shared/.env
 	fi
 
 	_devtools-execute dev container-ssh --container $container --command "$cmd $path"

@@ -25,8 +25,10 @@ Note that any of these tools that require the `<CONTAINER>`, you only have to sp
 
 **usage:**
 ```bash
-dev-create <APP-NAME>
+dev-create [app-name]
 ```
+
+`[app-name]` optional: if ommitted, will use current directory for the app.
 
 Shortcut for creating a container, you only have to specify the app name as long as it matches the contain name.  It also enables the xdebug grain by default.
 
@@ -34,10 +36,15 @@ Shortcut for creating a container, you only have to specify the app name as long
 
 **usage:**
 ```bash
-dev-build <APP-NAME>
+dev-build [app-name]
 ```
 
+`[app-name]` optional: if ommitted, will use current directory for the app.
+
 If the app name and container do not match:
+
+Note that most miss-matched naming is acounted for you like primer automatically assumes jobs container, this usage is not often needed.
+
 ```bash
 dev-build <CONTAINER> <APP-NAME>
 ```
@@ -61,14 +68,18 @@ dev-ssh netsuite
 dev-ssh service 1
 ```
 
-Note: no arguments will ssh into the guest box.
+Note: no arguments will ssh into the guest box, it will not derive the container based on current folder.
 
 ## dev-log
 
 **usage:**
 ```bash
-dev-log <APP-NAME> <OPTIONAL: LINES>
+dev-log [app-name] [line-count]
 ```
+
+`[app-name]` optional: if ommitted, will use current directory for the app.
+
+`[line-count]` optional: if ommited, will start with default of 10, note that the app name is not needed to specify number of lines.
 
 This does a little more than just a simple `dev show-logs --container ...`, it also specifies the log file to use depending on the specific container / app.  For instance, if you use `dev-log service` it will use `/tmp/zs_debug`.
 
@@ -78,10 +89,12 @@ If you need the system log you may just need to use the normal `dev show-logs` c
 
 **usage:**
 ```bash
-dev-test <APP-NAME>
+dev-test [app-name]
 ```
 
-Starts SSH, puts you in the app folder `/var/www/APP-NAME/current`, and sets up alias for `phpunit` so you can use `phpunit ...` instead of `./vendor/bin/phpunit ...` or similar.
+`[app-name]` optional: if ommitted, will use current directory for the app.
+
+Starts SSH, puts you in the app folder `/var/www/[app-name]/current`, and sets up alias for `phpunit` so you can use `phpunit ...` instead of `./vendor/bin/phpunit ...` or similar.
 
 **Difference from `dev-phpunit`:** This opens a shell in the container instead of running phpunit in the container once, so is useful for for running phpunit multiple times, or if you need to do anything in the container and just want to start in the `/var/www/app/current` folder.
 
@@ -149,10 +162,14 @@ If the job-development container is blown away and re-created, or if somehow pri
 
 **usage:**
 ```bash
-dev-env <APP-NAME> <OPTIONAL: Param Search>
+dev-env [app-name] [param search]
 ```
 
-This allows you to easily view the shared environment config without needing to ssh and other stuff. 
+`[app-name]` optional: if ommitted, will use current directory for the app. Required if wishing to also include search params.
+
+`[param search]`  optional: allows only showing lines that match (case insensitive)
+
+This allows you to easily view the shared environment config without needing to ssh and other stuff.
 
 #### Examples
 **Get the full shared for userservice:**
@@ -183,6 +200,10 @@ This is basically a shortcut for calling `dev-phpunit app-name ...`, as long as 
 
 **Warning:**
 If you have phpunit already installed in the main path for your host machine, this may interfere with that.
+
+# App from Current Directory
+
+Some dev-* commands can derive the app or container to use based on the current folder that you run the command from.  Each command will document whether the app name is required or whether it can use the current directory.
 
 # Special Apps
 
