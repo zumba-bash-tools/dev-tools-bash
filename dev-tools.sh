@@ -149,6 +149,9 @@ dev-phpunit() {
 	shift
 	if [[ $service == "service" ]]; then
 		local path="./lib/bin/phpunit"
+	elif [[ $service == "public" || $service == "admin" ]]; then
+		# Cake version
+		local path="./app/Vendor/bin/cake test --configuration phpunit.xml -app app"
 	else
 		local path="./vendor/bin/phpunit"
 	fi
