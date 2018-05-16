@@ -44,6 +44,23 @@ _devtools-execute() {
 	"$@"
 }
 
+# Get the phpunit command to use based on service
+_devtools-phpunit() {
+	if [[ $1 == "service" ]]; then
+		echo "./lib/bin/phpunit"
+		return 0
+	elif [[ $1 == "public" || $1 == "admin" ]]; then
+		# Cake version
+		echo "./app/Vendor/bin/cake test --configuration phpunit.xml -app app"
+		return 0
+	elif [[ $1 == "api" ]]; then
+		# Cake version without phpunit.xml
+		echo "./app/Vendor/bin/cake test -app app"
+		return 0
+	fi
+	echo "./vendor/bin/phpunit"
+}
+
 # usage: dev-create <APP-NAME>
 dev-create() {
 	local app=`_devtools-app $@`
@@ -128,15 +145,10 @@ dev-log() {
 
 # usage: dev-test <APP-NAME>
 dev-test() {
-	local phpunit commands
 	local app=`_devtools-app $@`
 	local container=`_devtools-container $app`
-	phpunit="./vendor/phpunit/phpunit/phpunit"
-	# Add any special cases here for location of phpunit executable...
-	if [[ $app == "service" ]]; then
-		phpunit="./lib/phpunit/phpunit/phpunit"
-	fi
-	commands="cd /var/www/$app/current; alias phpunit=\\\"${phpunit}\\\";"
+	local phpunit=`_devtools-phpunit $app`
+	local commands="cd /var/www/$app/current; alias phpunit=\\\"${phpunit}\\\";"
 	_devtools-execute dev ssh --command "lxc exec $container -- su - $app -c \"echo '$commands . ~/.profile;' >> /home/$app/.bash_profile\""
 	_devtools-execute dev-ssh $app $app
 	_devtools-execute dev ssh --command "lxc exec $container -- su - $app -c \"rm /home/$app/.bash_profile\""
@@ -147,14 +159,7 @@ dev-phpunit() {
 	local service="${1}"
 	local container=`_devtools-container $service`
 	shift
-	if [[ $service == "service" ]]; then
-		local path="./lib/bin/phpunit"
-	elif [[ $service == "public" || $service == "admin" ]]; then
-		# Cake version
-		local path="./app/Vendor/bin/cake test --configuration phpunit.xml -app app"
-	else
-		local path="./vendor/bin/phpunit"
-	fi
+	local path=`_devtools-phpunit $service`
 	_devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $path $*"
 }
 
