@@ -124,7 +124,7 @@ dev-ssh() {
 dev-log() {
 	local lines log
 	local app=`_devtools-app $@`
-	local numeric = '^[0-9]+$'
+	local numeric='^[0-9]+$'
 	if [[ $app =~ $numeric ]]; then
 		lines=app
 		app=`_devtools-app`
