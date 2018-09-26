@@ -61,6 +61,37 @@ _devtools-phpunit() {
 	echo "./vendor/bin/phpunit"
 }
 
+# Figure out what command to use to run a job in the specific app
+_devtools-job() {
+	local command="bin/job.php"
+
+	if [[ $1 == "service" ]]; then
+		command="job.php"
+	fi
+	echo "time SERVICE_DEBUG_MODE=1 php $command"
+}
+
+# Figure out what command to use to run a listener in the specific app
+_devtools-listener() {
+	local command="bin/listener.php"
+
+	if [[ $1 == "service" ]]; then
+		command="listener.php"
+	fi
+	echo "time SERVICE_DEBUG_MODE=1 php $command"
+}
+
+# run a single command on a service, just need
+# _devtools-some-helper-name app [extra command line options to pass]
+_devtools-ssh-command() {
+	local cmd=`${1} ${2}`
+	shift
+	local service="${1}"
+	local container=`_devtools-container $service`
+	shift
+	_devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $cmd $*"
+}
+
 # usage: dev-create <APP-NAME>
 dev-create() {
 	local app=`_devtools-app $@`
@@ -156,11 +187,7 @@ dev-test() {
 
 # usage: dev-phpunit <APP-NAME> <OPTIONAL: PHPUNIT ARGUMENT(S)>
 dev-phpunit() {
-	local service="${1}"
-	local container=`_devtools-container $service`
-	shift
-	local path=`_devtools-phpunit $service`
-	_devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $path $*"
+	_devtools-ssh-command _devtools-phpunit $*
 }
 
 # usage: dev-clear
@@ -286,6 +313,16 @@ dev-env() {
 	fi
 
 	_devtools-execute dev container-ssh --container $container --command "$cmd $path"
+}
+
+# usage: dev-job app ExtraStuff
+dev-job() {
+	_devtools-ssh-command _devtools-job $*
+}
+
+# usage: dev-listener app SomeListener
+dev-listener() {
+	_devtools-ssh-command _devtools-listener $*
 }
 
 # Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool

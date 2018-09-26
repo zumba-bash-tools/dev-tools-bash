@@ -10,6 +10,8 @@ Useful for other software engineers that work **in the tech departnment at the c
     ```
     # Enable / Disable Specialty Tools
     export DEVTOOLS_phpunit=0
+    export DEVTOOLS_job=0
+    export DEVTOOLS_listener=0
 
     # Include the dev-tools
     . ~/zumba/git/dev-tools-bash/dev-tools.sh
@@ -113,6 +115,30 @@ dev-phpunit service Zumba/Test/Model/UserTest.php
 ```
 **Difference from `dev-test`:** this runs a single phpunit command without having to go into the container
 
+## dev-job
+
+**usage:**
+```bash
+dev-job <APP-NAME> <OPTIONAL: JOB ARGUMENT(S)>
+```
+
+**example:**  Run ShopJob listJobs in service:
+```bash
+dev-job service ShopJob listJobs
+```
+
+## dev-listener
+
+**usage:**
+```bash
+dev-listener <APP-NAME> <LISTENER-CLASS>
+```
+
+**example:**  Run AddressListener in service:
+```bash
+dev-listener service AddressListener
+```
+
 ## dev-clear
 **usage:**
 ```bash
@@ -200,6 +226,36 @@ This is basically a shortcut for calling `dev-phpunit app-name ...`, as long as 
 
 **Warning:**
 If you have phpunit already installed in the main path for your host machine, this may interfere with that.
+
+## job
+
+To enable, in your **.bash_profile** file, set `DEVTOOLS_job` to `1`.  Or if you are missing the line, add this above the line that includes dev-tools.sh file:
+```bash
+export DEVTOOLS_job=1
+```
+
+**To use:**
+This adds a handy alias for running a job.  From the host machine, just `cd` into any repo path that goes to a built app, then use `job ...` directly in the folder.
+
+This is basically a shortcut for calling `dev-job app-name ...`, as long as you are in the app's main folder, no need to specify the app name.
+
+**Warning:**
+If you have `job` already resolves to something in bash, this may interfere with that.
+
+## listener
+
+To enable, in your **.bash_profile** file, set `DEVTOOLS_listener` to `1`.  Or if you are missing the line, add this above the line that includes dev-tools.sh file:
+```bash
+export DEVTOOLS_listener=1
+```
+
+**To use:**
+This adds a handy alias for running a listener.  From the host machine, just `cd` into any repo path that goes to a built app, then use `listener ...` directly in the folder.
+
+This is basically a shortcut for calling `dev-listener app-name ...`, as long as you are in the app's main folder, no need to specify the app name.
+
+**Warning:**
+If you have `listener` already resolves to something in bash, this may interfere with that.
 
 # App from Current Directory
 
