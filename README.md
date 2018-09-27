@@ -43,9 +43,9 @@ List of commands:
 
 Commands that require adding `DEVTOOLS-commandname=1` to use (see [Conditional Commands](#conditional-commands))
 
-# [phpunit](#phpunit)
-# [job](#job)
-# [listener](#listener)
+* [phpunit](#phpunit)
+* [job](#job)
+* [listener](#listener)
 
 
 ## dev-create
