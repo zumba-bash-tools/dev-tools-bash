@@ -38,6 +38,7 @@ List of commands:
 * [dev-xdebug-init](#dev-xdebug-init)
 * [dev-init-primer](#dev-init-primer)
 * [dev-env](#dev-env) *app auto-detected*
+* [dev-rebuild-usersearch](#dev-rebuild-usersearch)
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -250,6 +251,21 @@ dev-env userservice
 ```bash
 dev-env userservice mongo
 ```
+
+## dev-rebuild-usersearch
+
+**usage:**
+```bash
+dev-rebuild-usersearch
+```
+
+This is for elastic search.  It **deletes** any existing user indexes, then runs the job to re-build the index.
+
+You might ask "why"?  The answer is that the user search currently creates a new index every time you build it, meant to make it seamless in production so it will continue to use an old index while the new one is built.  This is not good for development because it leaves a bunch of extra indexes around.
+
+Each user index that is full takes about a gig.  Run enough times it will quickly fill up your space on guest box.  If this happened to you, run the command and it will delete all the extra indexes and create just a single one.
+
+**Running time:** Usually around **20 Minutes** to build the full index.
 
 # Conditional Commands
 

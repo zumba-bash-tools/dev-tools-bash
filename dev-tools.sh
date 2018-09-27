@@ -325,6 +325,13 @@ dev-listener() {
 	_devtools-ssh-command _devtools-listener $*
 }
 
+# usage: dev-rebuild-usersearch
+dev-rebuild-usersearch() {
+	curl -XDELETE "http://guest:9200/.users__configuration"
+	curl -XDELETE "http://guest:9200/users_*"
+	dev-job service UserSearchJob rebuildSearch
+}
+
 # Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool
 _devtools-extra() {
 	local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
