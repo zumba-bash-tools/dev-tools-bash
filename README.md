@@ -59,6 +59,8 @@ dev-create [app-name]
 
 Shortcut for creating a container, you only have to specify the app name as long as it matches the contain name.  It also enables the xdebug grain by default.
 
+**Note:** This will use the `--force` option automatically so that if the container already exists it will automatically destroy it first.
+
 ## dev-build
 
 **usage:**
