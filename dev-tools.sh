@@ -96,7 +96,7 @@ _devtools-ssh-command() {
 dev-create() {
 	local app=`_devtools-app $@`
 	local container=`_devtools-container $app`
-	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt
+	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
