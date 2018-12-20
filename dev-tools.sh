@@ -89,7 +89,7 @@ _devtools-ssh-command() {
 	local service="${1}"
 	local container=`_devtools-container $service`
 	shift
-	_devtools-execute dev container-ssh --container $container --command "cd /var/www/$service/current && $cmd $*"
+	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
 }
 
 # usage: dev-create <APP-NAME>
