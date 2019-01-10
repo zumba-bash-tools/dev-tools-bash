@@ -229,7 +229,7 @@ dev-restart() {
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
 	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
-	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer)
+	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer convention)
 	local nextport=9000
 	local containers=()
 	local ports=()
