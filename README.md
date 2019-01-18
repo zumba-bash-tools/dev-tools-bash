@@ -36,8 +36,9 @@ List of commands:
 * [dev-clear](#dev-clear)
 * [dev-restart](#dev-restart)
 * [dev-xdebug-init](#dev-xdebug-init)
-* [dev-init-primer](#dev-init-primer)
+* [dev-init](#dev-init) *app auto-detected*
 * [dev-env](#dev-env) *app auto-detected*
+* [dev-cp](#dev-cp) *app auto-detected*
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -216,18 +217,27 @@ If you use this, be sure to run it after using `dev update` since that will rese
 
 Note that after the script runs, it will give some instructions to make sure the VSC config files don't end up showing as changes in git.  You only need to follow those the first time.
 
-## dev-init-primer
+## dev-init
 
 **usage:**
 ```bash
-dev-init-primer
+dev-init [app]
 ```
 
-This initializes the **primer** app inside the **job-development** container.  Use this so you can run PHPUnit tests for primer inside the **job-development** container.
+[app] optional : The app to initialize.  If not set on command line, uses current folder.  Must be one of:
+* core
+* elasticsearchunit
+* mongounit
+* primer
+* swivel
+* symbiosis
+* zumba-coding-standards
+
+This initializes one of the "library" apps inside the **job-development** container.  Use this so you can run PHPUnit tests for primer and other libraries inside the **job-development** container.
 
 Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create primer` first.
 
-If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
+If the job-development container is blown away and re-created, or if somehow the library is no longer set up in job-development container, just run this command again to re-initialize it.
 
 ## dev-env
 
@@ -251,6 +261,33 @@ dev-env userservice
 **Get the mongo settings for userservice:**
 ```bash
 dev-env userservice mongo
+```
+
+## dev-cp
+
+**usage:**
+```bash
+dev-env [from-library-name] [to-app-name]
+```
+
+`[from-library-name]` **not** optional: The app to copy into the other app, for example `common` or `core`.
+
+`[to-app-name]` optional: if omitted, will use current directory for the app.
+
+This allows you to easily copy changes to a library into an app to start testing using it, without having to commit the changes to the library first.
+
+For instance if you need to make changes to `primer`, this allows you to make those changes.  Then use this command to copy `primer` into another app to test the changes before you make any changes with silly mistakes in it.
+
+#### Examples
+**Copy local changes to primer into service:**
+```bash
+dev-cp primer service
+```
+
+**same as above but using the auto-detected folder:**
+```bash
+cd zumba/git/service
+dev-cp primer
 ```
 
 # Conditional Commands
@@ -334,5 +371,12 @@ Some dev-* commands can derive the app or container to use based on the current 
 
 The dev-* tools are all built to automatically know which container to use for the following special case apps:
 
-* **netsuite** - automatically uses **job-development** container
-* **primer** - automatically uses **job-development** container
+The following automatically use the **job-development** container:
+* `netsuite`
+* `core`
+* `elasticsearchunit`
+* `mongounit`
+* `primer`
+* `swivel`
+* `symbiosis`
+* `zumba-coding-standards`
