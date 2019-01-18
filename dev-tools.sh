@@ -343,6 +343,36 @@ dev-listener() {
 	_devtools-ssh-command _devtools-listener $*
 }
 
+# usage: dev-cp from-library to-app
+dev-cp() {
+	local lib=$1
+	shift
+	local app=`_devtools-app $@`
+	local vendor='vendor'
+	local from to
+	if ! `_devtools-is-library $lib` && $app ; then
+		echo Invalid option for dev-cp
+		echo
+		echo Format:
+		echo dev-cp from-library [optional: to-app name]
+		echo e.g.
+		echo dev-cp common service
+		echo
+		return 0
+	fi
+	from=$ZUMBA_APPS_REPO_PATH/$lib
+	if [[ $app == 'admin' || $app == 'api' || $app == 'public' ]]; then
+		vendor='app/Vendor'
+	elif [[ $app == 'service' ]]; then
+		vendor='lib'
+	fi
+	to=$ZUMBA_APPS_REPO_PATH/$app/$vendor/zumba/$lib
+	if [[ -d $to ]]; then
+		_devtools-execute rm -Rf $to
+	fi
+	_devtools-execute cp -R $from $to
+}
+
 # Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool
 _devtools-extra() {
 	local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

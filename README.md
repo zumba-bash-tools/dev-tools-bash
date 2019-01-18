@@ -39,6 +39,7 @@ List of commands:
 * [dev-init-primer](#dev-init-primer)
 * [dev-init-core](#dev-init-core)
 * [dev-env](#dev-env) *app auto-detected*
+* [dev-cp](#dev-cp) *app auto-detected*
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -265,6 +266,33 @@ dev-env userservice
 **Get the mongo settings for userservice:**
 ```bash
 dev-env userservice mongo
+```
+
+## dev-cp
+
+**usage:**
+```bash
+dev-env [from-library-name] [to-app-name]
+```
+
+`[from-library-name]` **not** optional: The app to copy into the other app, for example `common` or `core`.
+
+`[to-app-name]` optional: if omitted, will use current directory for the app.
+
+This allows you to easily copy changes to a library into an app to start testing using it, without having to commit the changes to the library first.
+
+For instance if you need to make changes to `primer`, this allows you to make those changes.  Then use this command to copy `primer` into another app to test the changes before you make any changes with silly mistakes in it.
+
+#### Examples
+**Copy local changes to primer into service:**
+```bash
+dev-cp primer service
+```
+
+**same as above but using the auto-detected folder:**
+```bash
+cd zumba/git/service
+dev-cp primer
 ```
 
 # Conditional Commands
