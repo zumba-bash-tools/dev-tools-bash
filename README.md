@@ -36,8 +36,7 @@ List of commands:
 * [dev-clear](#dev-clear)
 * [dev-restart](#dev-restart)
 * [dev-xdebug-init](#dev-xdebug-init)
-* [dev-init-primer](#dev-init-primer)
-* [dev-init-core](#dev-init-core)
+* [dev-init](#dev-init) *app auto-detected*
 * [dev-env](#dev-env) *app auto-detected*
 * [dev-cp](#dev-cp) *app auto-detected*
 
@@ -218,31 +217,27 @@ If you use this, be sure to run it after using `dev update` since that will rese
 
 Note that after the script runs, it will give some instructions to make sure the VSC config files don't end up showing as changes in git.  You only need to follow those the first time.
 
-## dev-init-primer
+## dev-init
 
 **usage:**
 ```bash
-dev-init-primer
+dev-init [app]
 ```
 
-This initializes the **primer** app inside the **job-development** container.  Use this so you can run PHPUnit tests for primer inside the **job-development** container.
+[app] optional : The app to initialize.  If not set on command line, uses current folder.  Must be one of:
+* core
+* elasticsearchunit
+* mongounit
+* primer
+* swivel
+* symbiosis
+* zumba-coding-standards
+
+This initializes one of the "library" apps inside the **job-development** container.  Use this so you can run PHPUnit tests for primer and other libraries inside the **job-development** container.
 
 Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create primer` first.
 
-If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
-
-## dev-init-core
-
-**usage:**
-```bash
-dev-init-core
-```
-
-This initializes the **core** app inside the **job-development** container.  Use this so you can run PHPUnit tests for core inside the **job-development** container.
-
-Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create core` first.
-
-If the job-development container is blown away and re-created, or if somehow core is no longer set up in job-development container, just run this command again to re-initialize it.
+If the job-development container is blown away and re-created, or if somehow the library is no longer set up in job-development container, just run this command again to re-initialize it.
 
 ## dev-env
 
@@ -376,6 +371,12 @@ Some dev-* commands can derive the app or container to use based on the current 
 
 The dev-* tools are all built to automatically know which container to use for the following special case apps:
 
-* **netsuite** - automatically uses **job-development** container
-* **primer** - automatically uses **job-development** container
-* **core** - automatically uses **job-development** container
+The following automatically use the **job-development** container:
+* `netsuite`
+* `core`
+* `elasticsearchunit`
+* `mongounit`
+* `primer`
+* `swivel`
+* `symbiosis`
+* `zumba-coding-standards`
