@@ -37,6 +37,7 @@ List of commands:
 * [dev-restart](#dev-restart)
 * [dev-xdebug-init](#dev-xdebug-init)
 * [dev-init-primer](#dev-init-primer)
+* [dev-init-core](#dev-init-core)
 * [dev-env](#dev-env) *app auto-detected*
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
@@ -229,6 +230,19 @@ Make sure the **job-development** container is already created before calling th
 
 If the job-development container is blown away and re-created, or if somehow primer is no longer set up in job-development container, just run this command again to re-initialize it.
 
+## dev-init-core
+
+**usage:**
+```bash
+dev-init-core
+```
+
+This initializes the **core** app inside the **job-development** container.  Use this so you can run PHPUnit tests for core inside the **job-development** container.
+
+Make sure the **job-development** container is already created before calling this, if it is not you can create it using `dev-create core` first.
+
+If the job-development container is blown away and re-created, or if somehow core is no longer set up in job-development container, just run this command again to re-initialize it.
+
 ## dev-env
 
 **usage:**
@@ -336,3 +350,4 @@ The dev-* tools are all built to automatically know which container to use for t
 
 * **netsuite** - automatically uses **job-development** container
 * **primer** - automatically uses **job-development** container
+* **core** - automatically uses **job-development** container

@@ -9,7 +9,7 @@
 
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
-	if [[ $1 == "netsuite" || $1 == "primer" ]]; then
+	if [[ $1 == "netsuite" || `_devtools-is-library $1` ]]; then
 		echo job-development
 		return 0
 	fi
@@ -92,6 +92,30 @@ _devtools-ssh-command() {
 	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
 }
 
+_devtools-is-library() {
+	if [[ $1 == 'primer' || $1 == 'core' ]]; then
+		true
+	else
+		false
+	fi
+}
+
+_devtools-init-library() {
+	local lib=$1
+	# TODO: If this is ever baked in to main dev tools, remove this
+	_devtools-execute dev container-ssh --container job-development --command "useradd -m $lib && mkdir /home/$lib/.composer/ && cp /home/service/.composer/auth.json /home/$lib/.composer && chown -R $lib:$lib /home/$lib/.composer"
+	echo
+	echo Note: you may see a few errors here, that is normal since creating an app not normally meant to exist by itself
+	echo in job-development container..
+	echo
+	_devtools-execute dev build-app --container job-development --app $lib
+	echo
+	echo You should not see errors after this point...
+	echo
+	_devtools-execute dev container-ssh --container job-development --command "[ ! -L \"/var/www/$lib/current\" ] && ln -s /var/www/$lib/releases/local_source /var/www/$lib/current"
+	dev-build $lib
+}
+
 # usage: dev-create <APP-NAME>
 dev-create() {
 	local app=`_devtools-app $@`
@@ -106,9 +130,9 @@ dev-build() {
 	if [[ $2 ]]; then
 		app=$2
 	fi
-	if [[ $app == "primer" ]]; then
-		# composer install
-		_devtools-execute dev container-ssh --container job-development --user primer --command "cd /var/www/primer/current && composer install"
+	if [[ `_devtools-is-library $app` ]]; then
+		# no built-in build for library apps, run composer install
+		_devtools-execute dev container-ssh --container job-development --user $app --command "cd /var/www/$app/current && composer install"
 	else
 		_devtools-execute dev build-app --container $container --app $app
 	fi
@@ -116,18 +140,12 @@ dev-build() {
 
 # usage: dev-init-primer
 dev-init-primer() {
-	# TODO: If this is ever baked in to main dev tools, remove this
-	_devtools-execute dev container-ssh --container job-development --command "useradd -m primer && mkdir /home/primer/.composer/ && cp /home/service/.composer/auth.json /home/primer/.composer && chown -R primer:primer /home/primer/.composer"
-	echo
-	echo Note: you may see a few errors here, that is normal since creating an app not normally meant to exist by itself
-	echo in job-development container..
-	echo
-	_devtools-execute dev build-app --container job-development --app primer
-	echo
-	echo You should not see errors after this point...
-	echo
-	_devtools-execute dev container-ssh --container job-development --command "[ ! -L \"/var/www/primer/current\" ] && ln -s /var/www/primer/releases/local_source /var/www/primer/current"
-	dev-build primer
+	_devtools-init-library primer
+}
+
+# usage: dev-init-core
+dev-init-core() {
+	_devtools-init-library core
 }
 
 # usage: dev-ssh <OPTIONAL: APP-NAME> <OPTIONAL: USER or 1 to use APP-NAME for user>
@@ -229,7 +247,7 @@ dev-restart() {
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
 	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
-	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer convention)
+	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer convention core)
 	local nextport=9000
 	local containers=()
 	local ports=()
