@@ -57,6 +57,10 @@ _devtools-phpunit() {
 		# Cake version without phpunit.xml
 		echo "./app/Vendor/bin/cake test -app app"
 		return 0
+	elif [[ $1 == "core" ]]; then
+		# phpunit.xml inside contrib folder
+		echo "./vendor/bin/phpunit --configuration contrib/phpunit.xml"
+		return 0
 	fi
 	echo "./vendor/bin/phpunit"
 }
