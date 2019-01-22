@@ -9,7 +9,7 @@
 
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
-	if [[ $1 == "netsuite" || `_devtools-is-library $1` ]]; then
+	if [[ $1 == "netsuite" ]] || `_devtools-is-library $1`; then
 		echo job-development
 		return 0
 	fi
