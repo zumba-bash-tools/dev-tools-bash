@@ -9,7 +9,7 @@
 
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
-	if [[ $1 == "netsuite" || `_devtools-is-library $1` ]]; then
+	if [[ $1 == "netsuite" ]] || `_devtools-is-library $1`; then
 		echo job-development
 		return 0
 	fi
@@ -56,6 +56,10 @@ _devtools-phpunit() {
 	elif [[ $1 == "api" ]]; then
 		# Cake version without phpunit.xml
 		echo "./app/Vendor/bin/cake test -app app"
+		return 0
+	elif [[ $1 == "core" ]]; then
+		# phpunit.xml inside contrib folder
+		echo "./vendor/bin/phpunit --configuration contrib/phpunit.xml"
 		return 0
 	fi
 	echo "./vendor/bin/phpunit"
