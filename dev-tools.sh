@@ -250,14 +250,14 @@ dev-restart() {
 }
 
 dev-restart-apache() {
-    local container
+	local container
 
-    echo "Restarting apaache..."
-    local containers=$(dev list-containers | awk '/-development/ { print $2 }')
-    for container in $containers; do
-        echo "Restarting apache in container $container"
-        _devtools-execute dev container-ssh --container "$container" --command "systemctl restart apache2"
-    done 
+	echo "Restarting apache..."
+	local containers=$(dev list-containers | awk '/-development/ { print $2 }')
+	for container in $containers; do
+		echo "Restarting apache in container $container"
+		_devtools-execute dev container-ssh --container "$container" --command "systemctl restart apache2"
+	done
 }
 
 
