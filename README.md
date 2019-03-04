@@ -35,6 +35,7 @@ List of commands:
 * [dev-listener](#dev-listener)
 * [dev-clear](#dev-clear)
 * [dev-restart](#dev-restart)
+* [dev-restart-apache](#dev-restart-apache)
 * [dev-xdebug-init](#dev-xdebug-init)
 * [dev-init](#dev-init) *app auto-detected*
 * [dev-env](#dev-env) *app auto-detected*
@@ -203,6 +204,15 @@ dev-restart
 For when things are just getting a little too funky in your VM.
 
 This is the last step before calling Ghost Busters.  It actually halts the VM (not just suspend like `dev stop`) then starts it up again with `dev start`.
+
+## dev-restart-apache
+
+**usage:**
+```bash
+dev-restart-apache
+```
+
+This restarts apache in all the containers you have configured.
 
 ## dev-xdebug-init
 
