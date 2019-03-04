@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ###
 # Tools used to make things easier
 #
@@ -248,6 +249,18 @@ dev-restart() {
 	_devtools-execute dev start
 }
 
+dev-restart-apache() {
+    local container
+
+    echo "Restarting apaache..."
+    local containers=$(dev list-containers | awk '/-development/ { print $2 }')
+    for container in $containers; do
+        echo "Restarting apache in container $container"
+        _devtools-execute dev container-ssh --container "$container" --command "systemctl restart apache2"
+    done 
+}
+
+
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
 	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
@@ -290,8 +303,8 @@ dev-xdebug-init() {
 		fi
 	done
 
-	echo "restarting things so the new ports take effect..."
-	dev-restart
+	echo "Restarting things so the new ports take effect..."
+	dev-restart-apache
 
 	echo
 	echo ----------------------------------------------------------------------------------------------
