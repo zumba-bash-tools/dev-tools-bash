@@ -110,6 +110,36 @@ _devtools-is-library() {
 	false
 }
 
+# Shortcut for invoking one of the DB helpers, requires helper name (either sequelpro or tableplus)
+_devtools-db-helper() {
+	if [[ ! $AWS_SESSION_TOKEN ]]; then
+		echo
+		echo You forgot to copy/paste aws session export lines!
+		echo
+		echo SEE: https://github.com/zumba/onboarding#getting-a-token
+		echo
+		return 0
+	fi
+	local helper=$1
+	local role='engineer'
+	local env='dev'
+	local environment="${env}elopment"
+	local whitespace="[[:space:]]"
+	shift
+	for i in "$@"; do
+		if [[ $i == 'pro' ]]; then
+			env=$i
+			environment="${env}duction"
+		elif [[ $i == 'sta' ]]; then
+			env=$i
+			environment="${env}ging"
+		else
+			role=$i
+		fi
+	done
+	_devtools-execute dev $helper --environment $environment --username iam_${role}_${env}
+}
+
 # usage: dev-create <APP-NAME>
 dev-create() {
 	local app=`_devtools-app $@`
@@ -388,6 +418,14 @@ dev-cp() {
 		_devtools-execute rm -Rf $to
 	fi
 	_devtools-execute cp -R $from $to
+}
+
+dev-tableplus() {
+	_devtools-db-helper tableplus $@
+}
+
+dev-sequelpro() {
+	_devtools-db-helper sequelpro $@
 }
 
 # Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool

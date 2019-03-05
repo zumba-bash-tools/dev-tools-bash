@@ -40,6 +40,8 @@ List of commands:
 * [dev-init](#dev-init) *app auto-detected*
 * [dev-env](#dev-env) *app auto-detected*
 * [dev-cp](#dev-cp) *app auto-detected*
+* [dev-tableplus](#dev-tableplus)
+* [dev-sequelpro](#dev-sequelpro)
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -299,6 +301,34 @@ dev-cp primer service
 cd zumba/git/service
 dev-cp primer
 ```
+
+## dev-tableplus
+
+**usage:**
+```bash
+dev-tableplus [env] [role]
+```
+**Order of attributes not significant (role can go first)**
+
+`[env]` optional: Defaults to `dev` if not specified.
+
+`[role]` optional: Defaults to `engineer` if not specified.
+
+This is a shortcut for `dev tableplus`.
+
+## dev-sequelpro
+
+**usage:**
+```bash
+dev-sequelpro [env] [role]
+```
+**Order of attributes not significant (role can go first)**
+
+`[env]` optional: Defaults to `dev` if not specified.
+
+`[role]` optional: Defaults to `engineer` if not specified.
+
+This is a shortcut for `dev sequelpro`.
 
 # Conditional Commands
 
