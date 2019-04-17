@@ -414,10 +414,14 @@ dev-cp() {
 		vendor='lib'
 	fi
 	to=$ZUMBA_APPS_REPO_PATH/$app/$vendor/zumba/$lib
-	if [[ -d $to ]]; then
-		_devtools-execute rm -Rf $to
+	if [ "$(which rsync)" != '' -a "$from" -a "$to" ]; then
+		_devtools-execute rsync -aq --delete --exclude=.git/ $from $(dirname $to)
+	else 
+		if [[ -d $to ]]; then
+			_devtools-execute rm -Rf $to
+		fi
+		_devtools-execute cp -R $from $to
 	fi
-	_devtools-execute cp -R $from $to
 }
 
 dev-tableplus() {
