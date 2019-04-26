@@ -290,18 +290,19 @@ dev-restart-apache() {
 	done
 }
 
-
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
-	local vsconfig=$(cat $ZUMBA_APPS_REPO_PATH/dev-tools-bash/vscode-config.json)
+	local vsconfig=$(cat $_DEVTOOLS_ROOT/vscode-config.json)
 	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer convention core)
 	local nextport=9000
 	local containers=()
 	local ports=()
-	local appconfig appfolder cmd container port
+	local xdebugLine="xdebug:"
+	local saltPath="/etc/salt/grains"
+	local appconfig appfolder cmd container port lineFound
 
 	for app in ${apps[@]}; do
-		container=`_devtools-container $app`
+		container=$(_devtools-container $app)
 
 		# make sure to use same port for specific container
 		port=0
@@ -323,7 +324,44 @@ dev-xdebug-init() {
 			echo "Updating things for $container : $app using port $port"
 			echo "Updating vscode configuration..."
 			[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
-			echo "$(printf "$vsconfig" $port $app)" > "${appfolder}.vscode/launch.json"
+			echo "$(printf "$vsconfig" $port $app)" >"${appfolder}.vscode/launch.json"
+
+			echo "Making sure xdebug is enabled in $container grains..."
+			cmd="grep '$xdebugLine' $saltPath"
+			lineFound=$(dev container-ssh --container $container --command "$cmd")
+			if [[ $lineFound == "" ]]; then
+				echo "xDebug grain not set, adding grain..."
+				cmd="echo 'xdebug: True' >> $saltPath"
+				dev container-ssh --container $container --command "$cmd"
+			elif [[ $lineFound == *"False"* ]]; then
+				echo "xDebug grain set to false, will change to true..."
+				cmd="sed -i 's/xdebug: False/xdebug: True/g' $saltPath"
+				dev container-ssh --container $container --command "$cmd"
+			elif [[ $lineFound == *"True"* ]]; then
+				echo "xDebug grain already enabled. :)"
+			else
+				echo "ERROR: Unexpected grain, will not try to add automatically."
+				echo
+				echo "Unexpected line:"
+				echo $lineFound
+				echo
+				echo "You will need to fix $saltPath then run salt-call state.highstate in the $container container."
+				echo
+			fi
+
+			echo "Checking that xdebug is enabled in php..."
+			cmd="php --version | grep Xdebug"
+			lineFound=$(dev container-ssh --container $container --command "$cmd")
+			if [[ $lineFound == "" ]]; then
+				echo "xDebug not installed, running highstate to see if that fixes..."
+				echo
+				echo "This could take some time..."
+				echo
+				cmd="salt-call state.highstate --state-output=terse --state-verbose=False"
+				dev container-ssh --container $container --command "$cmd"
+				echo "done!"
+				echo
+			fi
 
 			echo "Updating xdebug.ini in ${container}..."
 			cmd="grep -r -l 'xdebug.remote_port' /etc/php/* | xargs sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/g'"
@@ -432,13 +470,12 @@ dev-sequelpro() {
 	_devtools-db-helper sequelpro $@
 }
 
-# Internal - loads the tools in extra_tools only if the env var is set to 1 for the tool
-_devtools-extra() {
-	local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Internal - initializes any extra_tools only if the env var is set to 1 for the tool and sets needed vars
+_devtools-init() {
+	local DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 	local filename permission
 	# Load the conditional tools...
-	for filename in ${DIR}/extra_tools/*.sh
-	do
+	for filename in ${DIR}/extra_tools/*.sh; do
 		permission=${filename##*/}
 		permission=${permission%.sh}
 		permission=DEVTOOLS_$permission
@@ -447,5 +484,8 @@ _devtools-extra() {
 			. $filename
 		fi
 	done
+	# Export dir location
+	export _DEVTOOLS_ROOT=$DIR
 }
-_devtools-extra
+
+_devtools-init
