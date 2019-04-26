@@ -10,7 +10,7 @@
 
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
-	if [[ $1 == "netsuite" ]] || `_devtools-is-library $1`; then
+	if [[ $1 == "netsuite" ]] || $(_devtools-is-library $1); then
 		echo job-development
 		return 0
 	fi
@@ -89,10 +89,10 @@ _devtools-listener() {
 # run a single command on a service, just need
 # _devtools-some-helper-name app [extra command line options to pass]
 _devtools-ssh-command() {
-	local cmd=`${1} ${2}`
+	local cmd=$(${1} ${2})
 	shift
 	local service="${1}"
-	local container=`_devtools-container $service`
+	local container=$(_devtools-container $service)
 	shift
 	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
 }
@@ -142,19 +142,19 @@ _devtools-db-helper() {
 
 # usage: dev-create <APP-NAME>
 dev-create() {
-	local app=`_devtools-app $@`
-	local container=`_devtools-container $app`
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
 	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
 dev-build() {
-	local app=`_devtools-app $@`
-	local container=`_devtools-container $app`
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
 	if [[ $2 ]]; then
 		app=$2
 	fi
-	if `_devtools-is-library $app` ; then
+	if $(_devtools-is-library $app); then
 		# no built-in build for library apps, run composer install
 		_devtools-execute dev container-ssh --container job-development --user $app --command "cd /var/www/$app/current && composer install"
 	else
@@ -164,8 +164,8 @@ dev-build() {
 
 # usage: dev-init library
 dev-init() {
-	local lib=`_devtools-app $@`
-	if ! `_devtools-is-library $lib` ; then
+	local lib=$(_devtools-app $@)
+	if ! $(_devtools-is-library $lib); then
 		echo Invalid library $lib
 		return 0
 	fi
@@ -187,7 +187,7 @@ dev-init() {
 dev-ssh() {
 	local container user
 	if [[ $1 ]]; then
-		container="--container `_devtools-container $1`"
+		container="--container $(_devtools-container $1)"
 	fi
 	if [[ $2 ]]; then
 		if [[ $2 == "1" ]]; then
@@ -207,13 +207,13 @@ dev-ssh() {
 # usage: dev-log <APP-NAME> <OPTIONAL: LINES>
 dev-log() {
 	local lines log
-	local app=`_devtools-app $@`
+	local app=$(_devtools-app $@)
 	local numeric='^[0-9]+$'
 	if [[ $app =~ $numeric ]]; then
 		lines=app
-		app=`_devtools-app`
+		app=$(_devtools-app)
 	fi
-	local container=`_devtools-container $app`
+	local container=$(_devtools-container $app)
 	if [[ $2 ]]; then
 		lines="--lines $2"
 	fi
@@ -229,9 +229,9 @@ dev-log() {
 
 # usage: dev-test <APP-NAME>
 dev-test() {
-	local app=`_devtools-app $@`
-	local container=`_devtools-container $app`
-	local phpunit=`_devtools-phpunit $app`
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
+	local phpunit=$(_devtools-phpunit $app)
 	local commands="cd /var/www/$app/current; alias phpunit=\\\"${phpunit}\\\";"
 	_devtools-execute dev ssh --command "lxc exec $container -- su - $app -c \"echo '$commands . ~/.profile;' >> /home/$app/.bash_profile\""
 	_devtools-execute dev-ssh $app $app
@@ -246,23 +246,23 @@ dev-phpunit() {
 # usage: dev-clear
 dev-clear() {
 	echo "Clearing APC cache in service..." &&
-	dev container-ssh --container "service-development" --command "{
+		dev container-ssh --container "service-development" --command "{
 			curl -Lksv https://localhost/apc_clear_cache.php;
 			exit;
-	}" &> /dev/null &&
-	echo "Restarting apache in public..." &&
-	dev container-ssh --container "public-development" --command "{
+	}" &>/dev/null &&
+		echo "Restarting apache in public..." &&
+		dev container-ssh --container "public-development" --command "{
 			service apache2 restart;
 			exit;
-	}" &> /dev/null &&
-	echo "Clearing file cache for admin..." &&
-	dev container-ssh --container admin-development --command "
+	}" &>/dev/null &&
+		echo "Clearing file cache for admin..." &&
+		dev container-ssh --container admin-development --command "
 		cd /var/www/admin/current &&
 		rm -Rf app/tmp/* &&
-		git checkout -- app/tmp/" &> /dev/null &&
-	echo "Running clear-caches..." &&
-	_devtools-execute dev clear-caches &> /dev/null &&
-	echo "All caches cleared successfully..."
+		git checkout -- app/tmp/" &>/dev/null &&
+		echo "Running clear-caches..." &&
+		_devtools-execute dev clear-caches &>/dev/null &&
+		echo "All caches cleared successfully..."
 }
 
 # usage: dev-restart
@@ -271,12 +271,12 @@ dev-restart() {
 	# Actually halt the VM.  Don't do dev stop - that only suspends the VM and you may end up with same problems once
 	# it starts back up
 	cd $ZUMBA_APPS_REPO_PATH/onboarding &&
-	vagrant halt &&
-	cd - &&
-	echo "Starting things back up..." &&
-	# Use `vagrant halt` then `dev start` that way all the initialization stuff that happens in `dev start` runs (unlike
-	# doing just a `vagrant reload`)
-	_devtools-execute dev start
+		vagrant halt &&
+		cd - &&
+		echo "Starting things back up..." &&
+		# Use `vagrant halt` then `dev start` that way all the initialization stuff that happens in `dev start` runs (unlike
+		# doing just a `vagrant reload`)
+		_devtools-execute dev start
 }
 
 dev-restart-apache() {
@@ -360,8 +360,8 @@ dev-xdebug-init() {
 
 #gets the shared env
 dev-env() {
-	local app=`_devtools-app $@`
-	local container=`_devtools-container $app`
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
 
 	if [[ $2 ]]; then
 		local cmd="grep -i $2"
@@ -394,10 +394,10 @@ dev-listener() {
 dev-cp() {
 	local lib=$1
 	shift
-	local app=`_devtools-app $@`
+	local app=$(_devtools-app $@)
 	local vendor='vendor'
 	local from to
-	if ! `_devtools-is-library $lib` && $app ; then
+	if ! $(_devtools-is-library $lib) && $app; then
 		echo Invalid option for dev-cp
 		echo
 		echo Format:
