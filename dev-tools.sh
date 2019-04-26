@@ -265,7 +265,7 @@ dev-clear() {
 		echo "All caches cleared successfully..."
 }
 
-# usage: dev-restart
+# usage: dev-restart (requires onboarding to be symlinked from main app folder)
 dev-restart() {
 	echo "Halting the VM..."
 	# Actually halt the VM.  Don't do dev stop - that only suspends the VM and you may end up with same problems once
@@ -454,7 +454,7 @@ dev-cp() {
 	to=$ZUMBA_APPS_REPO_PATH/$app/$vendor/zumba/$lib
 	if [ "$(which rsync)" != '' -a "$from" -a "$to" ]; then
 		_devtools-execute rsync -aq --delete --exclude=.git/ $from $(dirname $to)
-	else 
+	else
 		if [[ -d $to ]]; then
 			_devtools-execute rm -Rf $to
 		fi

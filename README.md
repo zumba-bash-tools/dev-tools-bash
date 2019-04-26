@@ -5,19 +5,24 @@ Useful for other software engineers that work **in the tech departnment at the c
 
 # Setup
 
-1. First check out this repo into your normal folder for git repos.
-2. Add the following line to your `.profile` or `.bash_profile` file in your home folder (change 0 to 1 for specialty tools to enable, see [Conditional Commands](#conditional-commands)):
+1. First check out this repo somewhere outside the fancy case-sensitive file system.  If you like order, perhaps somewhere like `~/projects/`
+2. Add the following lines to your `.profile` or `.bash_profile` file in your home folder (change 0 to 1 for specialty tools to enable, see [Conditional Commands](#conditional-commands)):
     ```
-    # Enable / Disable Specialty Tools
+    # Enable / Disable Specialty Tools - change to 1 to enable each one
     export DEVTOOLS_phpunit=0
     export DEVTOOLS_job=0
     export DEVTOOLS_listener=0
 
     # Include the dev-tools
-    . ~/zumba/git/dev-tools-bash/dev-tools.sh
+    . ~/projects/dev-tools-bash/dev-tools.sh
     ```
 
-3. Open a new console and try out one of the new `dev-` commands.
+3. Adjust the last line if needed to point to where you checked out this repo in step 1.  Also change the other lines if you want to enable those non-standard tools.
+4. Open a new console and try out one of the new `dev-` commands.
+5. If you use case sensitive file system, create a sym-link to onboarding so the tools will know where to find it (adjust to match your setup):
+    ```
+	$ ln -s ~/onboarding /Volumes/ZumbaEnv/onboarding
+	```
 
 # Commands
 
@@ -223,7 +228,10 @@ This restarts apache in all the containers you have configured.
 dev-xdebug-init
 ```
 
-This sets up the Visual Studio Code configurations for each app folder, and sets up a different port to use for each to make debugging multiple apps at same time possible.
+This will:
+* Set up the Visual Studio Code configurations for each app folder.
+* Set up a different port to use for each container to make debugging multiple apps at same time possible.
+* Enable the xdebug grain if it looks like it is not already enabled (if it has to do this, it could take a long time, if already enabled it goes pretty fast)
 
 If you use this, be sure to run it after using `dev update` since that will reset the ports to default in all the containers.
 
