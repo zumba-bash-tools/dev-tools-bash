@@ -160,6 +160,15 @@ dev-build() {
 	else
 		_devtools-execute dev build-app --container $container --app $app
 	fi
+	if [[ $app == 'eventd' ]]; then
+		# Also build service, userservice, and rulesengineservice in jobs box
+		echo
+		echo Since building eventd, also build other apps in job box so eventd can properly delegate...
+		echo
+		_devtools-execute dev build-app --container job-development --app service
+		_devtools-execute dev build-app --container job-development --app userservice
+		_devtools-execute dev build-app --container job-development --app rulesengineservice
+	fi
 }
 
 # usage: dev-init library
