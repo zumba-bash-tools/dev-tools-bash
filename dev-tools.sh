@@ -10,7 +10,7 @@
 
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
-	if [[ $1 == "netsuite" ]] || $(_devtools-is-library $1); then
+	if [[ $1 == "netsuite" ]] || [[ $1 == "eventd" ]] || $(_devtools-is-library $1); then
 		echo job-development
 		return 0
 	fi
@@ -448,7 +448,7 @@ dev-cp() {
 	from=$ZUMBA_APPS_REPO_PATH/$lib
 	if [[ $app == 'admin' || $app == 'api' || $app == 'public' ]]; then
 		vendor='app/Vendor'
-	elif [[ $app == 'service' ]]; then
+	elif [[ $app == 'service' || $app == 'eventd' ]]; then
 		vendor='lib'
 	fi
 	to=$ZUMBA_APPS_REPO_PATH/$app/$vendor/zumba/$lib
