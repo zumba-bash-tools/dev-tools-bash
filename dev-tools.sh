@@ -99,7 +99,7 @@ _devtools-ssh-command() {
 
 # see if the library is one of the main libraries
 _devtools-is-library() {
-	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zumba-coding-standards)
+	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zql zumba-coding-standards)
 	for lib in ${libs[@]}; do
 		if [[ $1 == $lib ]]; then
 			true

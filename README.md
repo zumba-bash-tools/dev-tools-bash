@@ -251,6 +251,7 @@ dev-init [app]
 * primer
 * swivel
 * symbiosis
+* zql
 * zumba-coding-standards
 
 This initializes one of the "library" apps inside the **job-development** container.  Use this so you can run PHPUnit tests for primer and other libraries inside the **job-development** container.
