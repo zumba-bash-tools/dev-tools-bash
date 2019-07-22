@@ -421,6 +421,7 @@ The dev-* tools are all built to automatically know which container to use for t
 
 The following automatically use the **job-development** container:
 * `netsuite`
+* `eventd`
 * `core`
 * `elasticsearchunit`
 * `mongounit`

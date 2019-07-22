@@ -10,7 +10,7 @@
 
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
-	if [[ $1 == "netsuite" ]] || $(_devtools-is-library $1); then
+	if [[ $1 == "netsuite" ]] || [[ $1 == "eventd" ]] || $(_devtools-is-library $1); then
 		echo job-development
 		return 0
 	fi
@@ -159,6 +159,15 @@ dev-build() {
 		_devtools-execute dev container-ssh --container job-development --user $app --command "cd /var/www/$app/current && composer install"
 	else
 		_devtools-execute dev build-app --container $container --app $app
+	fi
+	if [[ $app == 'eventd' ]]; then
+		# Also build service, userservice, and rulesengineservice in jobs box
+		echo
+		echo Since building eventd, also build other apps in job box so eventd can properly delegate...
+		echo
+		_devtools-execute dev build-app --container job-development --app service
+		_devtools-execute dev build-app --container job-development --app userservice
+		_devtools-execute dev build-app --container job-development --app rulesengineservice
 	fi
 }
 
@@ -448,7 +457,7 @@ dev-cp() {
 	from=$ZUMBA_APPS_REPO_PATH/$lib
 	if [[ $app == 'admin' || $app == 'api' || $app == 'public' ]]; then
 		vendor='app/Vendor'
-	elif [[ $app == 'service' ]]; then
+	elif [[ $app == 'service' || $app == 'eventd' ]]; then
 		vendor='lib'
 	fi
 	to=$ZUMBA_APPS_REPO_PATH/$app/$vendor/zumba/$lib
