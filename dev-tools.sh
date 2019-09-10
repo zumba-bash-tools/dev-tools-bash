@@ -416,12 +416,13 @@ dev-env() {
 		local cmd="cat"
 	fi
 
-	if [[ $app == service ]]; then
-		local path=/var/www/service/shared/config/environment.php
+	local path=/var/www/$app/shared
+	if [[ $app == service || $app == netsuite ]]; then
+		path="$path/config/environment.php"
 	elif [[ $app == public || $app == api ]]; then
-		local path=/var/www/$app/shared/app/Config/environment.php
+		path="$path/app/Config/environment.php"
 	else
-		local path=/var/www/$app/shared/.env
+		path="$path/.env"
 	fi
 
 	_devtools-execute dev container-ssh --container $container --command "$cmd $path"
