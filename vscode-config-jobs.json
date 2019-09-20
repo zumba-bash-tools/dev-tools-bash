@@ -1,0 +1,23 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "XDebug on %s",
+			"type": "php",
+			"request": "launch",
+			"port": %s,
+			"pathMappings": {
+				"/var/www/%s/releases/local_source": "${workspaceRoot}"
+			}
+		},
+		{
+			"name": "XDebug on jobs box",
+			"type": "php",
+			"request": "launch",
+			"port": %s,
+			"pathMappings": {
+				"/var/www/%s/releases/local_source": "${workspaceRoot}"
+			}
+		}
+	]
+}

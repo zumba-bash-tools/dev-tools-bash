@@ -302,10 +302,13 @@ dev-restart-apache() {
 # Usage: dev-xdebug-init
 dev-xdebug-init() {
 	local vsconfig=$(cat $_DEVTOOLS_ROOT/vscode-config.json)
-	local apps=(admin api public rulesengineservice service userservice zumba netsuite primer convention core)
+	local vsconfigJobs=$(cat $_DEVTOOLS_ROOT/vscode-config-jobs.json)
+	# note: one that uses jobs box must be first to init jobs box port
+	local apps=(netsuite admin api public rulesengineservice service userservice primer convention core)
 	local nextport=9000
 	local containers=()
 	local ports=()
+	local jobPort=9000
 	local xdebugLine="xdebug:"
 	local saltPath="/etc/salt/grains"
 	local appconfig appfolder cmd container port lineFound
@@ -333,7 +336,12 @@ dev-xdebug-init() {
 			echo "Updating things for $container : $app using port $port"
 			echo "Updating vscode configuration..."
 			[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
-			echo "$(printf "$vsconfig" $port $app)" >"${appfolder}.vscode/launch.json"
+			if [[ $app == *"service" ]]; then
+				echo "Using dual configs to listen to jobs box if needed..."
+				echo "$(printf "$vsconfigJobs" $app $port $app $jobPort $app)" >"${appfolder}.vscode/launch.json"
+			else
+				echo "$(printf "$vsconfig" $port $app)" >"${appfolder}.vscode/launch.json"
+			fi
 
 			echo "Making sure xdebug is enabled in $container grains..."
 			cmd="grep '$xdebugLine' $saltPath"
