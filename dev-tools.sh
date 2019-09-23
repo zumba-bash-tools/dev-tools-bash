@@ -97,6 +97,16 @@ _devtools-ssh-command() {
 	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
 }
 
+# same as _devtools-ssh-command but force job-development for container
+_devtools-ssh-command-job() {
+	local cmd=$(${1} ${2})
+	shift
+	local service="${1}"
+	local container="job-development"
+	shift
+	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
+}
+
 # see if the library is one of the main libraries
 _devtools-is-library() {
 	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zql zumba-coding-standards)
@@ -438,12 +448,12 @@ dev-env() {
 
 # usage: dev-job app ExtraStuff
 dev-job() {
-	_devtools-ssh-command _devtools-job $*
+	_devtools-ssh-command-job _devtools-job $*
 }
 
 # usage: dev-listener app SomeListener
 dev-listener() {
-	_devtools-ssh-command _devtools-listener $*
+	_devtools-ssh-command-job _devtools-listener $*
 }
 
 # usage: dev-cp from-library to-app
