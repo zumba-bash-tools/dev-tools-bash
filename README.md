@@ -167,12 +167,14 @@ dev-job [app-name] [job argument(s)]
 
 `[job argument(s)]` optional: just like running the job in the container, you don't need to provide any additional arguments, in which case it will print out the list of jobs available.  The arguments are just like you would expect, specify which job and which action to run that job (see examples below).
 
-**example:**  Run ShopJob listJobs in service:
+**Note**: When using xdebug, note that this runs in `job` container, so need to select the xdebug option for job container.
+
+**example:**  Run ShopJob listJobs in service app:
 ```bash
 dev-job service ShopJob listJobs
 ```
 
-**example:**  List all available jobs in userservice:
+**example:**  List all available jobs in userservice app:
 ```bash
 dev-job userservice
 ```
@@ -188,7 +190,9 @@ dev-listener [app-name] [listener class]
 
 `[listener class]` The listener class to run.
 
-**example:**  Run AddressListener in service:
+**Note**: When using xdebug, note that this runs in `job` container, so need to select the xdebug option for job container.
+
+**example:**  Run AddressListener in service app:
 ```bash
 dev-listener service AddressListener
 ```
@@ -229,7 +233,7 @@ dev-xdebug-init
 ```
 
 This will:
-* Set up the Visual Studio Code configurations for each app folder.
+* Set up the Visual Studio Code configurations for each app folder.  It will set up dual configs for service apps, to be able to debug in the service container OR the job container for that app.
 * Set up a different port to use for each container to make debugging multiple apps at same time possible.
 * Enable the xdebug grain if it looks like it is not already enabled (if it has to do this, it could take a long time, if already enabled it goes pretty fast)
 
