@@ -150,6 +150,8 @@ dev-phpunit [app-name] [phpunit argument(s)]
 
 `[phpunit argument(s)]` optional: specify whatever you want to pass to phpunit on the command line.  See examples below.
 
+**Note:** With no additional arguments, it will run all tests for the app.
+
 **example:**  Run phpunit for UserTest model in service:
 ```bash
 dev-phpunit service Zumba/Test/Model/UserTest.php
