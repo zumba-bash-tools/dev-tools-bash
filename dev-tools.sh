@@ -50,16 +50,16 @@ _devtools-phpunit() {
 	if [[ $1 == "service" ]]; then
 		echo "./lib/bin/phpunit"
 		return 0
-	elif [[ $1 == "public" || $1 == "admin" ]]; then
-		# Cake version
-		echo "./app/Vendor/bin/cake test --configuration phpunit.xml -app app"
+	elif [[ $1 == "admin" ]]; then
+		echo "app/Console/cake test --configuration phpunit.xml --stderr"
 		return 0
-	elif [[ $1 == "api" ]]; then
-		# Cake version without phpunit.xml
+	elif [[ $1 == "public" ]]; then
 		echo "./app/Vendor/bin/cake test -app app"
 		return 0
+	elif [[ $1 == "api" ]]; then
+		echo "./app/Console/cake test -app app --stderr"
+		return 0
 	elif [[ $1 == "core" ]]; then
-		# phpunit.xml inside contrib folder
 		echo "./vendor/bin/phpunit --configuration contrib/phpunit.xml"
 		return 0
 	fi
@@ -259,7 +259,18 @@ dev-test() {
 
 # usage: dev-phpunit <APP-NAME> <OPTIONAL: PHPUNIT ARGUMENT(S)>
 dev-phpunit() {
-	_devtools-ssh-command _devtools-phpunit $*
+	local extra=""
+	if [[ "$#" == "1" ]]; then
+		# Nothing else passed, depending on app, add what is needed to run all tests
+		if [[ $1 == 'admin' ]]; then
+			extra=" app TestAllTheThings"
+		elif [[ $1 == 'public' ]]; then
+			extra=" app AllTests"
+		elif [[ $1 == "api" ]]; then
+			extra=" app ApiTests"
+		fi
+	fi
+	_devtools-ssh-command _devtools-phpunit $* $extra
 }
 
 # usage: dev-clear
