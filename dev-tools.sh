@@ -326,11 +326,11 @@ dev-xdebug-init() {
 	local vsconfigJobs=$(cat $_DEVTOOLS_ROOT/vscode-config-jobs.json)
 	# note: one that uses jobs box must be first to init jobs box port
 	local apps=(netsuite admin api public rulesengineservice service userservice primer convention core)
-	# note: use 9001 to avoid conflicts with some vscode helper that uses port 9000
-	local nextport=9001
+	# note: use 9010 to avoid conflicts with some vscode helper that uses port 9000+ for each window
+	local nextport=9010
 	local containers=()
 	local ports=()
-	local jobPort=9001
+	local jobPort=9010
 	local xdebugLine="xdebug:"
 	local saltPath="/etc/salt/grains"
 	local appconfig appfolder cmd container port lineFound
