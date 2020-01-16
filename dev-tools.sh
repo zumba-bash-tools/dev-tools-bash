@@ -86,6 +86,25 @@ _devtools-listener() {
 	echo "time SERVICE_DEBUG_MODE=1 php $command"
 }
 
+# Since listener does not do it for us... list all the listeners in the app
+_devtools-listener-list() {
+	local path="src/Listener"
+
+	if [[ $1 == "service" ]]; then
+		path="Zumba/Event/Listener"
+	fi
+	if [[ ! -d "$ZUMBA_APPS_REPO_PATH/$1/$path" ]]; then
+		echo Could not find listeners for the requested app.
+		return 0
+	fi
+	echo Available Listeners for $1:
+	echo ----------------------------------
+	for entry in "$ZUMBA_APPS_REPO_PATH/$1/$path"/*.php; do
+		echo  - $(basename $entry .php)
+	done
+	echo ----------------------------------
+}
+
 # run a single command on a service, just need
 # _devtools-some-helper-name app [extra command line options to pass]
 _devtools-ssh-command() {
@@ -464,6 +483,11 @@ dev-job() {
 
 # usage: dev-listener app SomeListener
 dev-listener() {
+	if [[ $# == '1' && -d "$ZUMBA_APPS_REPO_PATH/$1/" ]]; then
+		_devtools-listener-list $1
+		return 0
+	fi
+
 	_devtools-ssh-command-job _devtools-listener $*
 }
 

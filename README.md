@@ -190,13 +190,18 @@ dev-listener [app-name] [listener class]
 
 `[app-name]` **not** optional: since this accepts any number of arguments, to simplify everything, it will not try to auto-detect the app.  If you want that see the [`listener`](#listener) command.
 
-`[listener class]` The listener class to run.
+`[listener class]` optional: The listener class to run. If none provided, it will list all the listener classes found in the app.
 
 **Note**: When using xdebug, note that this runs in `job` container, so need to select the xdebug option for job container.
 
 **example:**  Run AddressListener in service app:
 ```bash
 dev-listener service AddressListener
+```
+
+See list of listeners in service app:
+```bash
+dev-listener service
 ```
 
 ## dev-clear
