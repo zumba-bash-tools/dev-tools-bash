@@ -344,7 +344,7 @@ dev-xdebug-init() {
 	local vsconfig=$(cat $_DEVTOOLS_ROOT/vscode-config.json)
 	local vsconfigJobs=$(cat $_DEVTOOLS_ROOT/vscode-config-jobs.json)
 	# note: one that uses jobs box must be first to init jobs box port
-	local apps=(netsuite admin api public rulesengineservice service userservice primer convention core)
+	local apps=(netsuite admin api public rulesengineservice service userservice primer convention core onlineclassstudent)
 	local nextport=9000
 	local containers=()
 	local ports=()
