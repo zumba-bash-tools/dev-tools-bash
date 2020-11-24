@@ -128,7 +128,7 @@ _devtools-ssh-command-job() {
 
 # see if the library is one of the main libraries
 _devtools-is-library() {
-	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zql zumba-coding-standards)
+	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zql zumba-coding-standards vanilla-js-connect)
 	for lib in ${libs[@]}; do
 		if [[ $1 == $lib ]]; then
 			true
@@ -173,7 +173,7 @@ _devtools-db-helper() {
 dev-create() {
 	local app=$(_devtools-app $@)
 	local container=$(_devtools-container $app)
-	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt --force
+	_devtools-execute dev create-container --container ${container}-1804 --image bionic --no-prebuilt --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
