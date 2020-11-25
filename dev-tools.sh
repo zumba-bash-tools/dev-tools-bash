@@ -177,6 +177,14 @@ dev-1804-create() {
 	dev-1804-rename $app
 }
 
+# usage: dev-1804-create-prebuilt <APP-NAME>
+dev-1804-create-prebuilt() {
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
+	_devtools-execute dev create-container --container ${container}-1804 --image-server office --use-custom-prebuilt  --force
+	dev-1804-rename $app
+}
+
 # usage: dev-1804-rename <APP-NAME>
 dev-1804-rename() {
 	local app=$(_devtools-app $@)
