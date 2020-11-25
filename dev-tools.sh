@@ -173,7 +173,7 @@ _devtools-db-helper() {
 dev-create() {
 	local app=$(_devtools-app $@)
 	local container=$(_devtools-container $app)
-	_devtools-execute dev create-container --container ${container} --image bionic --no-prebuilt --force
+	_devtools-execute dev create-container --container ${container} --image bionic --no-prebuilt --grains xdebug --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
