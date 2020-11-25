@@ -11,10 +11,10 @@
 # For use in functions only to get the container based on the passed in app
 _devtools-container() {
 	if [[ $1 == "netsuite" ]] || [[ $1 == "eventd" ]] || $(_devtools-is-library $1); then
-		echo job-development-1804
+		echo job-development
 		return 0
 	fi
-	echo "$1-development-1804"
+	echo "$1-development"
 }
 
 # Get the app, either the first parameter or the current folder as the app
@@ -121,7 +121,7 @@ _devtools-ssh-command-job() {
 	local cmd=$(${1} ${2})
 	shift
 	local service="${1}"
-	local container="job-development-1804"
+	local container="job-development"
 	shift
 	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
 }
@@ -169,11 +169,37 @@ _devtools-db-helper() {
 	_devtools-execute dev $helper --environment $environment --username iam_${role}_${env}
 }
 
+# usage: dev-1804-create <APP-NAME>
+dev-1804-create() {
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
+	_devtools-execute dev create-container --container ${container}-1804 --image bionic --no-prebuilt --grains xdebug --force
+	dev-1804-rename $app
+}
+
+# usage: dev-1804-rename <APP-NAME>
+dev-1804-rename() {
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
+	_devtools-execute dev rename-container --container ${container}-1804 --container-new-name $container
+}
+
+# usage: dev-1804-rename-all
+dev-1804-rename-all() {
+	local containers=$(dev list-containers | awk '/-development-1804/ { print $2 }')
+	local app
+	for container in $containers; do
+		app=${container%-development-1804}
+		dev-1804-rename $app
+	done
+}
+
 # usage: dev-create <APP-NAME>
+# deprecated... probably... creates it the old way
 dev-create() {
 	local app=$(_devtools-app $@)
 	local container=$(_devtools-container $app)
-	_devtools-execute dev create-container --container ${container} --image bionic --no-prebuilt --grains xdebug --force
+	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
@@ -185,7 +211,7 @@ dev-build() {
 	fi
 	if $(_devtools-is-library $app); then
 		# no built-in build for library apps, run composer install
-		_devtools-execute dev container-ssh --container job-development-1804 --user $app --command "cd /var/www/$app/current && composer install"
+		_devtools-execute dev container-ssh --container job-development --user $app --command "cd /var/www/$app/current && composer install"
 	else
 		_devtools-execute dev build-app --container $container --app $app
 	fi
@@ -194,9 +220,9 @@ dev-build() {
 		echo
 		echo Since building eventd, also build other apps in job box so eventd can properly delegate...
 		echo
-		_devtools-execute dev build-app --container job-development-1804 --app service
-		_devtools-execute dev build-app --container job-development-1804 --app userservice
-		_devtools-execute dev build-app --container job-development-1804 --app rulesengineservice
+		_devtools-execute dev build-app --container job-development --app service
+		_devtools-execute dev build-app --container job-development --app userservice
+		_devtools-execute dev build-app --container job-development --app rulesengineservice
 	fi
 }
 
@@ -208,16 +234,16 @@ dev-init() {
 		return 0
 	fi
 	# TODO: If this is ever baked in to main dev tools, remove this
-	_devtools-execute dev container-ssh --container job-development-1804 --command "useradd -m $lib && mkdir /home/$lib/.composer/ && cp /home/service/.composer/auth.json /home/$lib/.composer && chown -R $lib:$lib /home/$lib/.composer"
+	_devtools-execute dev container-ssh --container job-development --command "useradd -m $lib && mkdir /home/$lib/.composer/ && cp /home/service/.composer/auth.json /home/$lib/.composer && chown -R $lib:$lib /home/$lib/.composer"
 	echo
 	echo Note: you may see a few errors here, that is normal since creating an app not normally meant to exist by itself
-	echo in job-development-1804 container..
+	echo in job-development container..
 	echo
-	_devtools-execute dev build-app --container job-development-1804 --app $lib
+	_devtools-execute dev build-app --container job-development --app $lib
 	echo
 	echo You should not see errors after this point...
 	echo
-	_devtools-execute dev container-ssh --container job-development-1804 --command "[ ! -L \"/var/www/$lib/current\" ] && ln -s /var/www/$lib/releases/local_source /var/www/$lib/current"
+	_devtools-execute dev container-ssh --container job-development --command "[ ! -L \"/var/www/$lib/current\" ] && ln -s /var/www/$lib/releases/local_source /var/www/$lib/current"
 	dev-build $lib
 }
 
@@ -315,7 +341,7 @@ dev-restart-apache() {
 	local container
 
 	echo "Restarting apache..."
-	local containers=$(dev list-containers | awk '/-development-1804/ { print $2 }')
+	local containers=$(dev list-containers | awk '/-development/ { print $2 }')
 	for container in $containers; do
 		echo "Restarting apache in container $container"
 		_devtools-execute dev container-ssh --container "$container" --command "systemctl restart apache2"
