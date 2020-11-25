@@ -202,6 +202,11 @@ dev-1804-rename-all() {
 	done
 }
 
+# usage: dev-1804-dns
+dev-1804-dns() {
+	_devtools-execute dev update-host-dns-1804
+}
+
 # usage: dev-create <APP-NAME>
 # deprecated... probably... creates it the old way
 dev-create() {
