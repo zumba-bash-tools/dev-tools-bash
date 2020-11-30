@@ -3,6 +3,8 @@ A few tools for doing things on command line
 
 Useful for other software engineers that work **in the tech departnment at the company I work** and have local environments set up with the `dev` commands.
 
+Version for Ubuntu 18.04 builds.
+
 # Setup
 
 1. First check out this repo somewhere outside the fancy case-sensitive file system.  If you like order, perhaps somewhere like `~/projects/`
@@ -47,6 +49,12 @@ List of commands:
 * [dev-cp](#dev-cp) *app auto-detected*
 * [dev-tableplus](#dev-tableplus)
 * [dev-sequelpro](#dev-sequelpro)
+* 18.04 "temporary" tools:
+  * `dev-1804-create <app>` *app auto-detected* - create the container using 1804 build then rename the container to remove -1804.
+  * `dev-1804-create-prebuilt <app>` *app auto-detected* - create the container using 1804 pre-built image, then rename the container to remove -1804.
+  * `dev-1804-dns` - Shortcut for `dev update-host-dns-1804`
+  * `dev-1804-rename <app>` *app auto-detected* - rename container for that app to remove 1804 suffix
+  * `dev-1804-rename-all` - rename all containers with `-1804` suffix to remove suffix.
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
