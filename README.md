@@ -50,11 +50,6 @@ List of commands:
 * [dev-tableplus](#dev-tableplus)
 * [dev-sequelpro](#dev-sequelpro)
 * 18.04 "temporary" tools:
-  * `dev-1804-create <app>` *app auto-detected* - create the container using 1804 build then rename the container to remove -1804.
-  * `dev-1804-create-prebuilt <app>` *app auto-detected* - create the container using 1804 pre-built image, then rename the container to remove -1804.
-  * `dev-1804-dns` - Shortcut for `dev update-host-dns-1804`
-  * `dev-1804-rename <app>` *app auto-detected* - rename container for that app to remove 1804 suffix
-  * `dev-1804-rename-all` - rename all containers with `-1804` suffix to remove suffix.
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -64,6 +59,17 @@ Commands that require adding `DEVTOOLS-commandname=1` to use (see [Conditional C
 * [job](#job)
 * [listener](#listener)
 
+# 18.04 Temporary Commands
+
+Temporary commands: these are not extensively documented.  Just a quick note here.
+
+* `dev-1804-create <app>` *app auto-detected* - create the container using 1804 build then rename the container to remove `-1804`.
+* `dev-1804-create-prebuilt <app>` *app auto-detected* - create the container using 1804 pre-built image, then rename the container to remove `-1804`.
+* `dev-1804-dns` - Shortcut for `dev update-host-dns-1804`
+* `dev-1804-rename <app>` *app auto-detected* - rename container for that app to remove `-1804` suffix
+* `dev-1804-rename-all` - rename all containers with `-1804` suffix to remove suffix.
+
+*app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
 ## dev-create
 
