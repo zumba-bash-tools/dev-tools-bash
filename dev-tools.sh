@@ -448,7 +448,7 @@ dev-xdebug-init() {
 		fi
 
 		echo "Updating xdebug.ini in ${container}..."
-		cmd="grep -r -l 'xdebug.remote_port' /etc/php/* | xargs sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/g'"
+		cmd="grep -r -l 'xdebug.client_port' /etc/php/* | xargs sed -i 's/xdebug.client_port=[0-9]\{4\}/xdebug.client_port=${port}/g'"
 		dev container-ssh --container $container --command "$cmd"
 	done
 
