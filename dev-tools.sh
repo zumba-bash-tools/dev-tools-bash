@@ -294,9 +294,7 @@ dev-log() {
 	if [[ $2 ]]; then
 		lines="--lines $2"
 	fi
-	if [[ $app == "service" ]]; then
-		log="--log /tmp/zs_debug"
-	elif [[ $app == "rulesengineservice" ]]; then
+	if [[ $app == "rulesengineservice" ]]; then
 		log="--log /tmp/rulesengine.log"
 	elif [[ $app == "userservice" ]]; then
 		log="--log /tmp/user.log"
