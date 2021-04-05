@@ -3,8 +3,6 @@ A few tools for doing things on command line
 
 Useful for other software engineers that work **in the tech departnment at the company I work** and have local environments set up with the `dev` commands.
 
-Version for Ubuntu 18.04 builds.
-
 # Setup
 
 1. First check out this repo somewhere outside the fancy case-sensitive file system.  If you like order, perhaps somewhere like `~/projects/`
@@ -33,6 +31,7 @@ Note that any of these tools that require the `<CONTAINER>`, you only have to sp
 List of commands:
 
 * [dev-create](#dev-create) *app auto-detected*
+* [dev-create-prebuilt](#dev-create) *app auto-detected*
 * [dev-build](#dev-build) *app auto-detected*
 * [dev-ssh](#dev-ssh)
 * [dev-log](#dev-log) *app auto-detected*
@@ -49,7 +48,6 @@ List of commands:
 * [dev-cp](#dev-cp) *app auto-detected*
 * [dev-tableplus](#dev-tableplus)
 * [dev-sequelpro](#dev-sequelpro)
-* 18.04 "temporary" tools:
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -58,18 +56,6 @@ Commands that require adding `DEVTOOLS-commandname=1` to use (see [Conditional C
 * [phpunit](#phpunit)
 * [job](#job)
 * [listener](#listener)
-
-# 18.04 Temporary Commands
-
-Temporary commands: these are not extensively documented.  Just a quick note here.
-
-* `dev-1804-create <app>` *app auto-detected* - create the container using 1804 build then rename the container to remove `-1804`.
-* `dev-1804-create-prebuilt <app>` *app auto-detected* - create the container using 1804 pre-built image, then rename the container to remove `-1804`.
-* `dev-1804-dns` - Shortcut for `dev update-host-dns-1804`
-* `dev-1804-rename <app>` *app auto-detected* - rename container for that app to remove `-1804` suffix
-* `dev-1804-rename-all` - rename all containers with `-1804` suffix to remove suffix.
-
-*app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
 ## dev-create
 
@@ -81,6 +67,19 @@ dev-create [app-name]
 `[app-name]` optional: if ommitted, will use current directory for the app.
 
 Shortcut for creating a container, you only have to specify the app name as long as it matches the contain name.  It also enables the xdebug grain by default.
+
+**Note:** This will use the `--force` option automatically so that if the container already exists it will automatically destroy it first.
+
+## dev-create-prebuilt
+
+**usage:**
+```bash
+dev-create-prebuilt [app-name]
+```
+
+`[app-name]` optional: if ommitted, will use current directory for the app.
+
+Shortcut for creating a container, using prebuilt image, you only have to specify the app name as long as it matches the contain name.
 
 **Note:** This will use the `--force` option automatically so that if the container already exists it will automatically destroy it first.
 
