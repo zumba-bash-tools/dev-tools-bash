@@ -128,7 +128,7 @@ _devtools-ssh-command-job() {
 
 # see if the library is one of the main libraries
 _devtools-is-library() {
-	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zql zumba-coding-standards)
+	local libs=(core elasticsearchunit mongounit primer swivel symbiosis zql zumba-coding-standards vanilla-js-connect)
 	for lib in ${libs[@]}; do
 		if [[ $1 == $lib ]]; then
 			true
@@ -174,6 +174,13 @@ dev-create() {
 	local app=$(_devtools-app $@)
 	local container=$(_devtools-container $app)
 	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt --force
+}
+
+# usage: dev-create-prebuilt <APP-NAME>
+dev-create-prebuilt() {
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
+	_devtools-execute dev create-container --container ${container} --image-server office --use-custom-prebuilt  --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
@@ -255,9 +262,7 @@ dev-log() {
 	if [[ $2 ]]; then
 		lines="--lines $2"
 	fi
-	if [[ $app == "service" ]]; then
-		log="--log /tmp/zs_debug"
-	elif [[ $app == "rulesengineservice" ]]; then
+	if [[ $app == "rulesengineservice" ]]; then
 		log="--log /tmp/rulesengine.log"
 	elif [[ $app == "userservice" ]]; then
 		log="--log /tmp/user.log"
@@ -294,24 +299,7 @@ dev-phpunit() {
 
 # usage: dev-clear
 dev-clear() {
-	echo "Clearing APC cache in service..." &&
-		dev container-ssh --container "service-development" --command "{
-			curl -Lksv https://localhost/apc_clear_cache.php;
-			exit;
-	}" &>/dev/null &&
-		echo "Restarting apache in public..." &&
-		dev container-ssh --container "public-development" --command "{
-			service apache2 restart;
-			exit;
-	}" &>/dev/null &&
-		echo "Clearing file cache for admin..." &&
-		dev container-ssh --container admin-development --command "
-		cd /var/www/admin/current &&
-		rm -Rf app/tmp/* &&
-		git checkout -- app/tmp/" &>/dev/null &&
-		echo "Running clear-caches..." &&
-		_devtools-execute dev clear-caches &>/dev/null &&
-		echo "All caches cleared successfully..."
+	_devtools-execute dev clear-caches
 }
 
 # usage: dev-restart (requires onboarding to be symlinked from main app folder)
@@ -372,60 +360,62 @@ dev-xdebug-init() {
 		fi
 
 		appfolder="$ZUMBA_APPS_REPO_PATH/$app/"
-		if [[ -d $appfolder ]]; then
-			echo "Updating things for $container : $app using port $port"
-			echo "Updating vscode configuration..."
-			[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
-			if [[ $app == *"service" ]]; then
-				echo "Using dual configs to listen to jobs box if needed..."
-				echo "$(printf "$vsconfigJobs" $app $port $app $jobPort $app)" >"${appfolder}.vscode/launch.json"
-			else
-				echo "$(printf "$vsconfig" $port $app)" >"${appfolder}.vscode/launch.json"
-			fi
-
-			echo "Making sure xdebug is enabled in $container grains..."
-			cmd="grep '$xdebugLine' $saltPath"
-			lineFound=$(dev container-ssh --container $container --command "$cmd")
-			if [[ $lineFound == "" ]]; then
-				echo "xDebug grain not set, adding grain..."
-				cmd="echo 'xdebug: True' >> $saltPath"
-				dev container-ssh --container $container --command "$cmd"
-			elif [[ $lineFound == *"False"* ]]; then
-				echo "xDebug grain set to false, will change to true..."
-				cmd="sed -i 's/xdebug: False/xdebug: True/g' $saltPath"
-				dev container-ssh --container $container --command "$cmd"
-			elif [[ $lineFound == *"True"* ]]; then
-				echo "xDebug grain already enabled. :)"
-			else
-				echo "ERROR: Unexpected grain, will not try to add automatically."
-				echo
-				echo "Unexpected line:"
-				echo $lineFound
-				echo
-				echo "You will need to fix $saltPath then run salt-call state.highstate in the $container container."
-				echo
-			fi
-
-			echo "Checking that xdebug is enabled in php..."
-			cmd="php --version | grep Xdebug"
-			lineFound=$(dev container-ssh --container $container --command "$cmd")
-			if [[ $lineFound == "" ]]; then
-				echo "xDebug not installed, running highstate to see if that fixes..."
-				echo
-				echo "This could take some time..."
-				echo
-				cmd="salt-call state.highstate --state-output=terse --state-verbose=False"
-				dev container-ssh --container $container --command "$cmd"
-				echo "done!"
-				echo
-			fi
-
-			echo "Updating xdebug.ini in ${container}..."
-			cmd="grep -r -l 'xdebug.remote_port' /etc/php/* | xargs sed -i 's/xdebug.remote_port=[0-9]\{4\}/xdebug.remote_port=${port}/g'"
-			dev container-ssh --container $container --command "$cmd"
-		else
-			echo "no $appfolder, so not initializing $app"
+		if [[ ! -d $appfolder ]]; then
+			echo "$appfolder does not exist, skipping..."
+			echo
+			continue
 		fi
+		echo "Updating things for $container : $app using port $port"
+		echo "Updating vscode configuration..."
+		[ -d "${appfolder}.vscode/" ] || mkdir -p "${appfolder}.vscode/"
+		if [[ $app == *"service" ]]; then
+			echo "Using dual configs to listen to jobs box if needed..."
+			echo "$(printf "$vsconfigJobs" $app $port $app $jobPort $app)" >"${appfolder}.vscode/launch.json"
+		else
+			echo "$(printf "$vsconfig" $port $app)" >"${appfolder}.vscode/launch.json"
+		fi
+
+		echo "Making sure xdebug is enabled in $container grains..."
+		cmd="grep '$xdebugLine' $saltPath"
+		lineFound=$(dev container-ssh --container $container --command "$cmd")
+		if [[ $lineFound == "" ]]; then
+			echo "xDebug grain not set, adding grain..."
+			cmd="echo 'xdebug: True' >> $saltPath"
+			dev container-ssh --container $container --command "$cmd"
+		elif [[ $lineFound == *"False"* ]]; then
+			echo "xDebug grain set to false, will change to true..."
+			cmd="sed -i 's/xdebug: False/xdebug: True/g' $saltPath"
+			dev container-ssh --container $container --command "$cmd"
+		elif [[ $lineFound == *"True"* ]]; then
+			echo "xDebug grain already enabled. :)"
+		else
+			echo "ERROR: Unexpected grain, will not try to add automatically."
+			echo
+			echo "Unexpected line:"
+			echo $lineFound
+			echo
+			echo "You will need to fix $saltPath then run salt-call state.highstate in the $container container."
+			echo
+			continue
+		fi
+
+		echo "Checking that xdebug is enabled in php..."
+		cmd="php --version | grep Xdebug"
+		lineFound=$(dev container-ssh --container $container --command "$cmd")
+		if [[ $lineFound == "" ]]; then
+			echo "xDebug not installed, running highstate to see if that fixes..."
+			echo
+			echo "This could take some time..."
+			echo
+			cmd="salt-call state.highstate --state-output=terse --state-verbose=False"
+			dev container-ssh --container $container --command "$cmd"
+			echo "done!"
+			echo
+		fi
+
+		echo "Updating xdebug.ini in ${container}..."
+		cmd="grep -r -l 'xdebug.client_port' /etc/php/* | xargs sed -i 's/xdebug.client_port=[0-9]\{4\}/xdebug.client_port=${port}/g'"
+		dev container-ssh --container $container --command "$cmd"
 	done
 
 	echo "Restarting things so the new ports take effect..."

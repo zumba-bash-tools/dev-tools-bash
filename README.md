@@ -31,6 +31,7 @@ Note that any of these tools that require the `<CONTAINER>`, you only have to sp
 List of commands:
 
 * [dev-create](#dev-create) *app auto-detected*
+* [dev-create-prebuilt](#dev-create) *app auto-detected*
 * [dev-build](#dev-build) *app auto-detected*
 * [dev-ssh](#dev-ssh)
 * [dev-log](#dev-log) *app auto-detected*
@@ -56,7 +57,6 @@ Commands that require adding `DEVTOOLS-commandname=1` to use (see [Conditional C
 * [job](#job)
 * [listener](#listener)
 
-
 ## dev-create
 
 **usage:**
@@ -67,6 +67,19 @@ dev-create [app-name]
 `[app-name]` optional: if ommitted, will use current directory for the app.
 
 Shortcut for creating a container, you only have to specify the app name as long as it matches the contain name.  It also enables the xdebug grain by default.
+
+**Note:** This will use the `--force` option automatically so that if the container already exists it will automatically destroy it first.
+
+## dev-create-prebuilt
+
+**usage:**
+```bash
+dev-create-prebuilt [app-name]
+```
+
+`[app-name]` optional: if ommitted, will use current directory for the app.
+
+Shortcut for creating a container, using prebuilt image, you only have to specify the app name as long as it matches the contain name.
 
 **Note:** This will use the `--force` option automatically so that if the container already exists it will automatically destroy it first.
 
