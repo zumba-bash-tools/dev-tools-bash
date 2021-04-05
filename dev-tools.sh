@@ -169,50 +169,18 @@ _devtools-db-helper() {
 	_devtools-execute dev $helper --environment $environment --username iam_${role}_${env}
 }
 
-# usage: dev-1804-create <APP-NAME>
-dev-1804-create() {
-	local app=$(_devtools-app $@)
-	local container=$(_devtools-container $app)
-	_devtools-execute dev create-container --container ${container}-1804 --image bionic --no-prebuilt --grains xdebug --force
-	dev-1804-rename $app
-}
-
-# usage: dev-1804-create-prebuilt <APP-NAME>
-dev-1804-create-prebuilt() {
-	local app=$(_devtools-app $@)
-	local container=$(_devtools-container $app)
-	_devtools-execute dev create-container --container ${container}-1804 --image-server office --use-custom-prebuilt  --force
-	dev-1804-rename $app
-}
-
-# usage: dev-1804-rename <APP-NAME>
-dev-1804-rename() {
-	local app=$(_devtools-app $@)
-	local container=$(_devtools-container $app)
-	_devtools-execute dev rename-container --container ${container}-1804 --container-new-name $container
-}
-
-# usage: dev-1804-rename-all
-dev-1804-rename-all() {
-	local containers=$(dev list-containers | awk '/-development-1804/ { print $2 }')
-	local app
-	for container in $containers; do
-		app=${container%-development-1804}
-		dev-1804-rename $app
-	done
-}
-
-# usage: dev-1804-dns
-dev-1804-dns() {
-	_devtools-execute dev update-host-dns-1804
-}
-
 # usage: dev-create <APP-NAME>
-# deprecated... probably... creates it the old way
 dev-create() {
 	local app=$(_devtools-app $@)
 	local container=$(_devtools-container $app)
 	_devtools-execute dev create-container --container $container --build-app --grains xdebug --no-prebuilt --force
+}
+
+# usage: dev-create-prebuilt <APP-NAME>
+dev-create-prebuilt() {
+	local app=$(_devtools-app $@)
+	local container=$(_devtools-container $app)
+	_devtools-execute dev create-container --container ${container} --image-server office --use-custom-prebuilt  --force
 }
 
 # usage: dev-build <APP-NAME|CONTAINER> <optional: APP-NAME>
