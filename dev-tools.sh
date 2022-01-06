@@ -122,6 +122,10 @@ _devtools-ssh-command-job() {
 	shift
 	local service="${1}"
 	local container="job-development"
+	# connectservice does not use job box
+	if [[ $service == 'connectservice' ]]; then
+		container=$(_devtools-container $service)
+	fi
 	shift
 	_devtools-execute dev container-ssh --container $container --user $service --command "cd /var/www/$service/current && $cmd $*"
 }
