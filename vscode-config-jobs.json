@@ -8,7 +8,11 @@
 			"port": %s,
 			"pathMappings": {
 				"/var/www/%s/releases/local_source": "${workspaceRoot}"
-			}
+			},
+			"ignore": [
+				"**/zumba/cqrs/src/Provider/ClassProvider.php",
+				"**/zumba/cqrs/src/Provider/MethodProvider.php"
+			]
 		},
 		{
 			"name": "XDebug on jobs box",
