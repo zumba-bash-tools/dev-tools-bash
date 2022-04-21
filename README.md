@@ -47,7 +47,9 @@ List of commands:
 * [dev-env](#dev-env) *app auto-detected*
 * [dev-cp](#dev-cp) *app auto-detected*
 * [dev-tableplus](#dev-tableplus)
+  * [dev-tableplus-sommos](#dev-tableplus-sommos)
 * [dev-sequelpro](#dev-sequelpro)
+  * [dev-sequelpro-sommos](#dev-sequelpro-sommos)
 
 *app auto-detected*: If you are already in an app's base folder, the app name can be omitted from these commands and it will use the app you are in.
 
@@ -339,29 +341,55 @@ dev-cp primer
 
 **usage:**
 ```bash
-dev-tableplus [env] [role]
+dev-tableplus [env] [role] [company]
 ```
 **Order of attributes not significant (role can go first)**
 
 `[env]` optional: Defaults to `dev` if not specified.
 
-`[role]` optional: Defaults to `engineer` if not specified.
+`[role]` optional: Defaults to `reader` if not specified.
+
+`[company]` optional: Defaults to `zumba` if not specified.
 
 This is a shortcut for `dev tableplus`.
+
+### dev-tableplus-sommos
+
+Shortcut on the shortcut, to allow for faster auto-complete.  This will specify sommos as the company and pro as env.
+It is the same as calling:
+
+```bash
+dev-tableplus sommos pro
+# OR:
+dev tableplus --environment production --username iam_reader_pro --company sommos
+```
 
 ## dev-sequelpro
 
 **usage:**
 ```bash
-dev-sequelpro [env] [role]
+dev-sequelpro [env] [role] [company]
 ```
 **Order of attributes not significant (role can go first)**
 
 `[env]` optional: Defaults to `dev` if not specified.
 
-`[role]` optional: Defaults to `engineer` if not specified.
+`[role]` optional: Defaults to `reader` if not specified.
+
+`[company]` optional: Defaults to `zumba` if not specified.
 
 This is a shortcut for `dev sequelpro`.
+
+### dev-sequelpro-sommos
+
+Shortcut on the shortcut, to allow for faster auto-complete.  This will specify sommos as the company and pro as env.
+It is the same as calling:
+
+```bash
+dev-sequelpro sommos pro
+# OR:
+dev sequelpro --environment production --username iam_reader_pro --company sommos
+```
 
 # Conditional Commands
 
