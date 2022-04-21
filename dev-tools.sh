@@ -154,23 +154,23 @@ _devtools-db-helper() {
 		return 0
 	fi
 	local helper=$1
-	local role='engineer'
+	local role='reader'
 	local env='dev'
 	local environment="${env}elopment"
 	local whitespace="[[:space:]]"
+	local company="zumba"
 	shift
 	for i in "$@"; do
 		if [[ $i == 'pro' ]]; then
 			env=$i
 			environment="${env}duction"
-		elif [[ $i == 'sta' ]]; then
-			env=$i
-			environment="${env}ging"
-		else
+		elif [[ $i == 'admin' ]]; then
 			role=$i
+		elif [[ $i == 'sommos' ]]; then
+			company=$i
 		fi
 	done
-	_devtools-execute dev $helper --environment $environment --username iam_${role}_${env}
+	_devtools-execute dev $helper --environment $environment --username iam_${role}_${env} --company $company
 }
 
 # usage: dev-create <APP-NAME>
@@ -523,8 +523,16 @@ dev-tableplus() {
 	_devtools-db-helper tableplus $@
 }
 
+dev-tableplus-sommos() {
+	_devtools-db-helper tableplus sommos pro $@
+}
+
 dev-sequelpro() {
 	_devtools-db-helper sequelpro $@
+}
+
+dev-sequelpro-sommos() {
+	_devtools-db-helper sequelpro sommos pro $@
 }
 
 # Internal - initializes any extra_tools only if the env var is set to 1 for the tool and sets needed vars
